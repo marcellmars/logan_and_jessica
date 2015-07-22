@@ -1,8 +1,21 @@
 {
+    "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDixnK8f4AuZrV+QZx7iiONG/SAiU5VrjlXD2KxRGvI6tDJrLvUin+GpcuMH1d/Qrc0+PmCzJ1duAiD/9F2q8kiYwQ1C3gZmztYneAiVX+3/OvXHr/idyueNQ5XFvBnMCpKD0KqPEksP80utV417fuaHAY4NFjofLZyWUvu23XHRwIDAQAB",
+    "minimum_chrome_version": "33",
     "name": "Logan & Jessica",
     "description": "Jessica invites Logan to run together...",
     "version": "0.1",
-    "permissions": ["tabs"],
+    "default_locale": "en",
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "offline_enabled": true,
+    "permissions": [
+        "tabs",
+        "clipboardRead",
+        "clipboardWrite",
+        "notifications",
+        "storage",
+        "terminalPrivate",
+        "unlimitedStorage"
+    ],
 
     "icons": {
         "16": "icons/ampersandman_init_16.png",
@@ -16,6 +29,24 @@
     "browser_action": {
         "default_title": "Logan & Jessica",
         "default_popup": "html/popup.html"
+    },
+    "web_accessible_resources": [
+        "html/crosh.html",
+        "html/nassh.html",
+        "html/nassh_google_relay.html",
+        "html/nassh_connect_dialog.html"
+    ],
+
+    "background": {
+        "scripts": [
+            "js/nassh_deps.concat.js",
+            "js/nassh.js",
+            "js/nassh_app.js",
+            "js/nassh_executables.js",
+            "js/nassh_preference_manager.js",
+            "js/nassh_nassh.js",
+            "js/nassh_background.js"
+        ]
     },
     "manifest_version": 2
 }
