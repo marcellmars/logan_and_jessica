@@ -1,0 +1,21 @@
+{
+    "name": "Logan & Jessica",
+    "description": "Jessica invites Logan to run together...",
+    "version": "0.1",
+    "permissions": ["tabs"],
+
+    "icons": {
+        "16": "icons/ampersandman_init_16.png",
+        "19": "icons/ampersandman_init_19.png",
+        "32": "icons/ampersandman_init_32.png",
+        "38": "icons/ampersandman_init_38.png",
+        "48": "icons/ampersandman_init_48.png",
+        "128": "icons/ampersandman_init_128.png"
+    },
+
+    "browser_action": {
+        "default_title": "Logan & Jessica",
+        "default_popup": "html/popup.html"
+    },
+    "manifest_version": 2
+}
