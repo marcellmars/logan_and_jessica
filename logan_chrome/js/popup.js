@@ -16,6 +16,7 @@ getArgs = function() {
     pp.appendChild(document.createTextNode("username: " + username));
     pp.appendChild(document.createElement("br"));
     pp.appendChild(document.createTextNode("port: " + port))
+    pp.appendChild(document.createElement("br"));
     pp.innerHTML += "<a href='../html/nassh.html#tunnel@ssh.pede.rs:443' target='_blank'>RUN RUN RUN</a>"
 }
 
@@ -23,13 +24,3 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("button").addEventListener("click", getArgs);
     document.getElementById("button").click();
 });
-
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        pp = document.getElementById("popup")
-        pp.appendChild(document.createTextNode("sender: " + sender))
-        console.log(request);
-        console.log(sender);
-    if (request.greeting == "hello")
-      sendResponse({farewell: "goodbye"});
-  });
