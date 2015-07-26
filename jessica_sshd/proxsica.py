@@ -10,10 +10,11 @@ import threading
 import gzip
 import zlib
 import base64
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
+import urllib
+from BaseHTTPServer import HTTPServer
+from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from cStringIO import StringIO
-
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     address_family = socket.AF_INET6
@@ -27,7 +28,7 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
             return HTTPServer.handle_error(self, request, client_address)
 
 
-class ProxyRequestHandler(BaseHTTPRequestHandler):
+class ProxyRequestHandler(SimpleHTTPRequestHandler):
     timeout = 5
     lock = threading.Lock()
 
@@ -36,7 +37,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         self.tls.conns = {}
         self.key = base64.b64encode("username:password")
 
-        BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
+        SimpleHTTPRequestHandler.__init__(self, *args, **kwargs)
 
     def log_error(self, format, *args):
         if isinstance(args[0], socket.timeout):
@@ -64,11 +65,19 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         elif self.headers.get('Proxy-Authorization') != 'Basic ' + self.key:
             self.wfile.write('sorry. change your proxy settings...')
 
+    def do_POST(self):
+        print("POST: {}".format(self.headers))
+        self.copyfile(urllib.urlopen(self.path), self.wfile)
+
     def do_CONNECT(self):
         self.check_authorization()
 
         address = self.path.split(':', 1)
-        address[1] = int(address[1]) or 443
+        print("ADDRESS: {}".format(address))
+        try:
+            address[1] = int(address[1])
+        except:
+            address[1] = 443
 
         try:
             s = socket.create_connection(address, timeout=self.timeout)
@@ -98,17 +107,20 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         req = self
         content_length = int(req.headers.get('Content-Length', 0))
         req_body = self.rfile.read(content_length) if content_length else None
-
+        print("CONNECTION: {}".format(self.connection.family))
         if req.path[0] == '/':
             if isinstance(self.connection, ssl.SSLSocket):
                 req.path = "https://%s%s" % (req.headers['Host'], req.path)
+                print("GET HTTPS: {}".formaty(req.path))
             else:
                 req.path = "http://%s%s" % (req.headers['Host'], req.path)
+                print("GET HTTP: {}".formaty(req.path))
 
         u = urlparse.urlsplit(req.path)
         scheme = u.scheme
         host = u.netloc
         path = (u.path + '?' + u.query if u.query else u.path)
+        print("==== SCHEME, HOST, PATH ====\nscheme: {}\nhost: {}\npath: {}\n===== END OF SCHEME ======\n".format(scheme, host, path))
         assert scheme in ('http', 'https')
         if host:
             req.headers['Host'] = host
@@ -131,6 +143,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
             res = conn.getresponse()
             res_body = res.read()
         except Exception as e:
+            print("EXCEPTION: {}".format(e))
             if host in self.tls.conns:
                 del self.tls.conns[host]
             self.send_error(502)
@@ -192,7 +205,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
             raise Exception("Unknown Content-Encoding: %s" % encoding)
         return text
 
-    do_POST = do_GET
+    #do_POST = do_CONNECT
     do_OPTIONS = do_GET
 
 
@@ -214,4 +227,15 @@ def start_server(HandlerClass=ProxyRequestHandler,
 
 
 if __name__ == '__main__':
-    start_server()
+    #start_server()
+    if sys.argv[1:]:
+        port = int(sys.argv[1])
+    else:
+        port = 8080
+    server_address = ('', port)
+
+    ProxyRequestHandler.protocol_version = "HTTP/1.1"
+    httpd = ThreadingHTTPServer((server_address), ProxyRequestHandler)
+    #threaded_httpd = threading.Thread(target=httpd.serve_forever)
+    #threaded_httpd.start()
+    httpd.serve_forever()
