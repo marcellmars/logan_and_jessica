@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 import socket
 import ssl
 import select
@@ -10,15 +9,10 @@ import urlparse
 import threading
 import gzip
 import zlib
-import time
-import json
-import re
 import base64
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from cStringIO import StringIO
-from subprocess import Popen, PIPE
-from HTMLParser import HTMLParser
 
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
@@ -65,7 +59,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         if self.headers.get('Proxy-Authorization') is None:
             self.do_AUTHHEAD()
             self.wfile.write('no auth header received')
-        elif self.headers.get('Proxy-Authorization') == 'Basic '+ self.key:
+        elif self.headers.get('Proxy-Authorization') == 'Basic ' + self.key:
             pass
         elif self.headers.get('Proxy-Authorization') != 'Basic ' + self.key:
             self.wfile.write('sorry. change your proxy settings...')
@@ -112,7 +106,9 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
                 req.path = "http://%s%s" % (req.headers['Host'], req.path)
 
         u = urlparse.urlsplit(req.path)
-        scheme, host, path = u.scheme, u.netloc, (u.path + '?' + u.query if u.query else u.path)
+        scheme = u.scheme
+        host = u.netloc
+        path = (u.path + '?' + u.query if u.query else u.path)
         assert scheme in ('http', 'https')
         if host:
             req.headers['Host'] = host
@@ -121,9 +117,15 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         try:
             if not host in self.tls.conns:
                 if scheme == 'https':
-                    self.tls.conns[host] = httplib.HTTPSConnection(host, timeout=self.timeout)
+                    httpsc = httplib.HTTPSConnection(host,
+                                                     timeout=self.timeout)
+                    self.tls.conns[host] = httpsc
                 else:
-                    self.tls.conns[host] = httplib.HTTPConnection(host, timeout=self.timeout)
+
+                    httpc = httplib.HTTPConnection(host,
+                                                   timeout=self.timeout)
+                    self.tls.conns[host] = httpc
+
             conn = self.tls.conns[host]
             conn.request(self.command, path, req_body, dict(req_headers))
             res = conn.getresponse()
@@ -138,12 +140,11 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
         setattr(res, 'headers', res.msg)
         setattr(res, 'response_version', version_table[res.version])
 
-        content_encoding = res.headers.get('Content-Encoding', 'identity')
-        res_body_plain = self.decode_content_body(res_body, content_encoding)
-
         res_headers = self.filter_headers(res.headers)
 
-        self.wfile.write("%s %d %s\r\n" % (self.protocol_version, res.status, res.reason))
+        self.wfile.write("%s %d %s\r\n" % (self.protocol_version,
+                                           res.status,
+                                           res.reason))
         for line in res_headers.headers:
             self.wfile.write(line)
         self.end_headers()
@@ -152,7 +153,14 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
 
     def filter_headers(self, headers):
         # http://tools.ietf.org/html/rfc2616#section-13.5.1
-        hop_by_hop = ('connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailers', 'transfer-encoding', 'upgrade')
+        hop_by_hop = ('connection',
+                      'keep-alive',
+                      'proxy-authenticate',
+                      'proxy-authorization',
+                      'te',
+                      'trailers',
+                      'transfer-encoding',
+                      'upgrade')
         for k in hop_by_hop:
             del headers[k]
         return headers
@@ -186,6 +194,7 @@ class ProxyRequestHandler(BaseHTTPRequestHandler):
 
     do_POST = do_GET
     do_OPTIONS = do_GET
+
 
 def start_server(HandlerClass=ProxyRequestHandler,
                  ServerClass=ThreadingHTTPServer,
