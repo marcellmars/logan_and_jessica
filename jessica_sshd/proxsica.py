@@ -16,6 +16,7 @@ from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import ThreadingMixIn
 from cStringIO import StringIO
 
+
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
     address_family = socket.AF_INET6
     daemon_threads = True
@@ -44,6 +45,9 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
             return
         self.log_message(format, *args)
 
+    def log_message(self, format, *args):
+        pass
+
     def do_HEAD(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
@@ -65,15 +69,11 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         elif self.headers.get('Proxy-Authorization') != 'Basic ' + self.key:
             self.wfile.write('sorry. change your proxy settings...')
 
-    def do_POST(self):
-        print("POST: {}".format(self.headers))
-        self.copyfile(urllib.urlopen(self.path), self.wfile)
-
     def do_CONNECT(self):
         self.check_authorization()
-
+        #print("THREAD: {}".format(threading.current_thread()))
         address = self.path.split(':', 1)
-        print("ADDRESS: {}".format(address))
+        #print("ADDRESS: {}".format(address))
         try:
             address[1] = int(address[1])
         except:
@@ -107,7 +107,6 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         req = self
         content_length = int(req.headers.get('Content-Length', 0))
         req_body = self.rfile.read(content_length) if content_length else None
-        print("CONNECTION: {}".format(self.connection.family))
         if req.path[0] == '/':
             if isinstance(self.connection, ssl.SSLSocket):
                 req.path = "https://%s%s" % (req.headers['Host'], req.path)
@@ -120,12 +119,10 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         scheme = u.scheme
         host = u.netloc
         path = (u.path + '?' + u.query if u.query else u.path)
-        print("==== SCHEME, HOST, PATH ====\nscheme: {}\nhost: {}\npath: {}\n===== END OF SCHEME ======\n".format(scheme, host, path))
         assert scheme in ('http', 'https')
         if host:
             req.headers['Host'] = host
         req_headers = self.filter_headers(req.headers)
-
         try:
             if not host in self.tls.conns:
                 if scheme == 'https':
@@ -154,7 +151,6 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         setattr(res, 'response_version', version_table[res.version])
 
         res_headers = self.filter_headers(res.headers)
-
         self.wfile.write("%s %d %s\r\n" % (self.protocol_version,
                                            res.status,
                                            res.reason))
@@ -163,6 +159,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(res_body)
         self.wfile.flush()
+        self.wfile.close()
 
     def filter_headers(self, headers):
         # http://tools.ietf.org/html/rfc2616#section-13.5.1
@@ -205,7 +202,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
             raise Exception("Unknown Content-Encoding: %s" % encoding)
         return text
 
-    #do_POST = do_CONNECT
+    do_POST = do_GET
     do_OPTIONS = do_GET
 
 
@@ -227,7 +224,7 @@ def start_server(HandlerClass=ProxyRequestHandler,
 
 
 if __name__ == '__main__':
-    #start_server()
+    # start_server()
     if sys.argv[1:]:
         port = int(sys.argv[1])
     else:
@@ -236,6 +233,9 @@ if __name__ == '__main__':
 
     ProxyRequestHandler.protocol_version = "HTTP/1.1"
     httpd = ThreadingHTTPServer((server_address), ProxyRequestHandler)
+    sa = httpd.socket.getsockname()
+    print "Serving HTTP Proxy on", sa[0], "port", sa[1], "..."
+
     #threaded_httpd = threading.Thread(target=httpd.serve_forever)
     #threaded_httpd.start()
     httpd.serve_forever()
