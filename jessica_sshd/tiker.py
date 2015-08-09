@@ -1,8 +1,10 @@
 import Tkinter
 from multiprocessing import Process
 import subprocess
-import proxsica
+import proxsicag
 import random
+
+PORT = 9991
 
 
 class Proxsica:
@@ -12,10 +14,8 @@ class Proxsica:
         self.ssh_proc = None
 
     def play(self):
-        print("ha!")
-        # self.root.event_generate("<<my_event>>")
-        self.server = proxsica.Proxy()
         self.portjess = random.randint(1025, 48000)
+        self.server = proxsicag.Proxy(PORT, self.portjess)
         self.p = Process(target=self.server.start_server)
         self.p.start()
         self.ssh_proc = subprocess.Popen(['ssh', '-T', '-N', '-g', '-C',
@@ -25,14 +25,11 @@ class Proxsica:
                                           '-o', 'StrictHostKeyChecking=no',
                                           '-o', 'ServerAliveINterval=60',
                                           '-o', 'ExitOnForwardFailure=yes',
-                                          # '-v',
                                           '-l', 'tunnel',
                                           '-R', '{}:localhost:{}'.format(self.portjess,
-                                                                         9991),
+                                                                         PORT),
                                           'ssh.pede.rs',
-                                          # 'memoryoftheworld.org',
                                           '-p', '443'])
-        print("tiker: {} and 9991".format(self.portjess))
         self.label_text.set("SSH Started")
 
     def stop(self):
@@ -49,15 +46,6 @@ class Proxsica:
         else:
             self.label_text.set("Start the server first...")
 
-
-# def change_label(event):
-#     print(event.__dict__)
-#     label['text'] = root.label_text
-#     from pprint import pprint as pp
-#     pp([(k, root[k]) for k in root.keys()])
-#     pp([(k, label[k]) for k in label.keys()])
-#     pp([(k, play[k]) for k in play.keys()])
-
 if __name__ == '__main__':
     root = Tkinter.Tk()
     label_text = Tkinter.StringVar()
@@ -68,5 +56,4 @@ if __name__ == '__main__':
     play.grid(row=0, column=0)
     stop.grid(row=1, column=0)
     label.grid(row=0, column=1, rowspan=2)
-    # root.bind("<<my_event>>", change_label)
     root.mainloop()

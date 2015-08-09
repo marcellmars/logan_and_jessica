@@ -199,45 +199,14 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
     do_OPTIONS = do_GET
 
 
-def get_uuid_credentials():
-    username = uuid.uuid4().hex
-    password = uuid.uuid4().hex
-    return (username,
-            password,
-            base64.b64encode("{}:{}".format(username,
-                                            password)))
-
-
-def runSSH(portjess, localjess):
-    return subprocess.Popen(
-        ['ssh', '-T', '-N', '-g', '-C',
-         '-c', 'arcfour,aes128-cbc,blowfish-cbc',
-         '-o', 'TCPKeepAlive=yes',
-         '-o', 'UserKnownHostsFile=/dev/null',
-         '-o', 'StrictHostKeyChecking=no',
-         '-o', 'ServerAliveINterval=60',
-         '-o', 'ExitOnForwardFailure=yes',
-         # '-v',
-         '-l', 'tunnel',
-         '-R', '{}:localhost:{}'.format(portjess,
-                                        localjess),
-         'ssh.pede.rs',
-         # 'memoryoftheworld.org',
-         '-p', '443'])
-         # '-p', '722'])
-
-
-#if __name__ == '__main__':
 
 
 class Proxy():
-    def __init__(self, port=9991):
+    def __init__(self, portjess, port=9991):
         self.port = port
+        self.portjess = portjess
+        self.credentials = self.get_uuid_credentials()
         server_address = ('localhost', port)
-        self.credentials = get_uuid_credentials()
-
-        self.portjess = random.randint(1025, 48000)
-        #self.portjess = 2000
 
         ProxyRequestHandler.portjess = self.portjess
         ProxyRequestHandler.localjess = port
@@ -250,34 +219,25 @@ class Proxy():
 
     def start_server(self):
         sa = self.httpd.socket.getsockname()
-        # self.ssh_proc = subprocess.Popen(['ssh', '-T', '-N', '-g', '-C',
-        #                                   '-c', 'arcfour,aes128-cbc,blowfish-cbc',
-        #                                   '-o', 'TCPKeepAlive=yes',
-        #                                   '-o', 'UserKnownHostsFile=/dev/null',
-        #                                   '-o', 'StrictHostKeyChecking=no',
-        #                                   '-o', 'ServerAliveINterval=60',
-        #                                   '-o', 'ExitOnForwardFailure=yes',
-        #                                   # '-v',
-        #                                   '-l', 'tunnel',
-        #                                   '-R', '{}:localhost:{}'.format(self.portjess,
-        #                                                                  self.port ),
-        #                                   'ssh.pede.rs',
-        #                                   # 'memoryoftheworld.org',
-        #                                   '-p', '443'])
 
         print("Serving HTTP Proxy on {} port {}...".format(sa[0], sa[1]))
         print("https://jessica.memoryoftheworld.org/{}/{}:{}".format(self.portjess,
                                                                      self.credentials[0],
                                                                      self.credentials[1]))
-        # print("curl -I -L -x {}.logan.memoryoftheworld.org:80 -U {}:{} www.labinary.org".format(portjess,
-        #                                                              credentials[0],
-        #                                                              credentials[1]))
 
         self.httpd.serve_forever()
 
     def stop_server(self):
         # self.ssh_proc.kill()
         self.httpd.socket.close()
+
+    def get_uuid_credentials(self):
+        username = uuid.uuid4().hex
+        password = uuid.uuid4().hex
+        return (username,
+                password,
+                base64.b64encode("{}:{}".format(username,
+                                                password)))
 
  #ssh -N -T -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o TCPKeepAlive=yes -l tunnel -R 8787:localhost:8089 ssh.pede.rs -p 443
 
