@@ -8,6 +8,7 @@
     "content_security_policy": "script-src 'self'; object-src 'self'",
     "offline_enabled": true,
     "permissions": [
+        "proxy",
         "webRequest",
         "webRequestBlocking",
         "*://*/",
