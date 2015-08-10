@@ -9,8 +9,7 @@ import urlparse
 import threading
 import base64
 import uuid
-import subprocess
-import random
+from time import gmtime, strftime
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import ThreadingMixIn
@@ -79,12 +78,14 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
                 self.wfile.write('sorry. change your proxy settings...')
 
     def do_CONNECT(self):
-        print("do_CONNECT {}".format(self.headers))
+        # print("do_CONNECT {}".format(self.headers))
         self.check_authorization()
         # if not self.ssh_proc:
         #     print("SSH TUNNEL KAPUTT!")
         address = self.path.split(':', 1)
-        print("do_CONNECT ADDRESS: {}".format(address))
+        # print("do_CONNECT ADDRESS: {}".format(address))
+        self.log_text.send("Last packets went through at: ".format(strftime("%H:%M:%S",
+                                                                            gmtime())))
         try:
             address[1] = int(address[1])
         except:
@@ -93,7 +94,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         try:
             s = socket.create_connection(address, timeout=self.timeout)
         except Exception as e:
-            print("do_CONNECT EXCEPTION: {}".format(e))
+            # print("do_CONNECT EXCEPTION: {}".format(e))
             if self.wfile.closed:
                 return
             self.send_error(502, 'Bad gateway')
@@ -120,16 +121,18 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         self.check_authorization()
 
         req = self
-        print("do_GET ADDRESS: {}".format(req.path))
+        # print("do_GET ADDRESS: {}".format(req.path))
+        self.log_text.send("Last packets went through at: ".format(strftime("%H:%M:%S",
+                                                                            gmtime())))
+
         content_length = int(req.headers.get('Content-Length', 0))
         req_body = self.rfile.read(content_length) if content_length else None
         if req.path[0] == '/':
             if isinstance(self.connection, ssl.SSLSocket):
                 req.path = "https://%s%s" % (req.headers['Host'], req.path)
-                print("GET HTTPS: {}".format(req.path))
+                # print("GET HTTPS: {}".format(req.path))
             else:
-                req.path = "http://%s%s" % (req.headers['Host'], req.path)
-                print("GET HTTP: {}".format(req.path))
+                req.path = "http://%s%s" % (req.headers['Host'], req.path) 
 
         u = urlparse.urlsplit(req.path)
         scheme = u.scheme
@@ -156,7 +159,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
             res = conn.getresponse()
             res_body = res.read()
         except Exception as e:
-            print("EXCEPTION: {}".format(e))
+            # print("EXCEPTION: {}".format(e))
             if host in self.tls.conns:
                 del self.tls.conns[host]
             if self.wfile.closed:
@@ -199,10 +202,8 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
     do_OPTIONS = do_GET
 
 
-
-
 class Proxy():
-    def __init__(self, portjess, port=9991):
+    def __init__(self, ica, portjess, port=9991):
         self.port = port
         self.portjess = portjess
         self.credentials = self.get_uuid_credentials()
@@ -210,21 +211,13 @@ class Proxy():
 
         ProxyRequestHandler.portjess = self.portjess
         ProxyRequestHandler.localjess = port
+        ProxyRequestHandler.log_text = ica
         ProxyRequestHandler.protocol_version = "HTTP/1.1"
-        #ProxyRequestHandler.key = base64.b64encode("username:password")
-
         ProxyRequestHandler.key = self.credentials[2]
         ProxyRequestHandler.proxysession = self.credentials[0][:8]
         self.httpd = ThreadingHTTPServer((server_address), ProxyRequestHandler)
 
     def start_server(self):
-        sa = self.httpd.socket.getsockname()
-
-        print("Serving HTTP Proxy on {} port {}...".format(sa[0], sa[1]))
-        print("https://jessica.memoryoftheworld.org/{}/{}:{}".format(self.portjess,
-                                                                     self.credentials[0],
-                                                                     self.credentials[1]))
-
         self.httpd.serve_forever()
 
     def stop_server(self):
@@ -238,7 +231,3 @@ class Proxy():
                 password,
                 base64.b64encode("{}:{}".format(username,
                                                 password)))
-
- #ssh -N -T -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o TCPKeepAlive=yes -l tunnel -R 8787:localhost:8089 ssh.pede.rs -p 443
-
-#ssh -N -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -L 6666:ssh.pede.rs:8787 tunnel@ssh.pede.rs -p 443 (for localhost:6666 proxy)
