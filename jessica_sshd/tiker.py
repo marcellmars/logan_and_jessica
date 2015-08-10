@@ -15,7 +15,7 @@ class Proxsica:
 
     def play(self):
         self.portjess = random.randint(1025, 48000)
-        self.server = proxsicag.Proxy(PORT, self.portjess)
+        self.server = proxsicag.Proxy(self.portjess, PORT)
         self.p = Process(target=self.server.start_server)
         self.p.start()
         self.ssh_proc = subprocess.Popen(['ssh', '-T', '-N', '-g', '-C',
