@@ -19,6 +19,7 @@ class Proxsica:
 
     def init_states(self):
         self.play_mode = "tunnel"
+        self.last = time.mktime(datetime.datetime.now().timetuple())
         self.ssh_proc, self.url, self.p = [None] * 3
 
     def play(self):
@@ -73,21 +74,17 @@ class Proxsica:
         self.log_text.set("Waiting for Logan...")
         self.init_states()
 
+    def loganica(self):
+        n = time.mktime(datetime.datetime.now().timetuple())
+        delta = (self.last - n) * -1
+        if gan.poll():
+            empt = gan.recv()
+            self.last = n
+            log_text.set("{}Logan is running{}".format(random.randint(3, 12) * ".", random.randint(3, 12) * "."))
+        elif log_text.get() != "Waiting for Logan..." and self.play_mode == "tunnel":
+            self.log_text.set("Last Logan's request {} seconds ago.".format(delta))
 
-
-
-def loganica():
-    global LAST
-    n = time.mktime(datetime.datetime.now().timetuple())
-    delta = (LAST - n) * -1
-    if gan.poll():
-        empt = gan.recv()
-        LAST = n
-        log_text.set("{}Logan is running{}".format(random.randint(3, 12) * ".", random.randint(3, 12) * "."))
-    elif log_text.get() != "Waiting for Logan...":
-        log_text.set("Last Logan's request {} seconds ago.".format(delta))
-
-    log.after(2000, loganica)
+        log.after(1000, self.loganica)
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
@@ -113,7 +110,7 @@ if __name__ == '__main__':
                         justify=Tkinter.LEFT,
                         anchor=Tkinter.W)
     url.grid(row=0, column=0)
-    log.grid(row=1, columnspan=2)
+    log.grid(row=1, columnspan=2, sticky=Tkinter.SW)
     last = time.mktime(datetime.datetime.now().timetuple())
-    log.after(2000, loganica)
+    log.after(2000, proksica.loganica)
     root.mainloop()
