@@ -81,7 +81,7 @@ class Proxsica:
             empt = gan.recv()
             self.last = n
             log_text.set("{}Logan is running{}".format(random.randint(3, 12) * ".", random.randint(3, 12) * "."))
-        elif log_text.get() != "Waiting for Logan..." and self.play_mode == "tunnel":
+        elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
             self.log_text.set("Last Logan's request {} seconds ago.".format(delta))
 
         log.after(1000, self.loganica)
