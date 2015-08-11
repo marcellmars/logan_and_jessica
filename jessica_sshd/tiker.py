@@ -7,13 +7,15 @@ import datetime
 import time
 
 PORT = 9991
-LAST = time.mktime(datetime.datetime.now().timetuple())
+PUBLIC_SERVER = "ssh.pede.rs"
+PUBLIC_SERVER_PORT = "443"
+
 
 class Proxsica:
     def __init__(self, ica, root, label_text, log_text):
         self.root = root
         self.label_text = label_text
-        self.log_text = log_text 
+        self.log_text = log_text
         self.ica = ica
         self.init_states()
 
@@ -43,8 +45,8 @@ class Proxsica:
                                           '-l', 'tunnel',
                                           '-R', '{}:localhost:{}'.format(self.portjess,
                                                                          PORT),
-                                          'ssh.pede.rs',
-                                          '-p', '443'])
+                                          PUBLIC_SERVER,
+                                          '-p', PUBLIC_SERVER_PORT])
 
         sa = self.server.httpd.socket.getsockname()
         if sa and self.ssh_proc:
@@ -76,13 +78,15 @@ class Proxsica:
 
     def loganica(self):
         n = time.mktime(datetime.datetime.now().timetuple())
-        delta = (self.last - n) * -1
+        delta = "{:0>8}".format(datetime.timedelta(seconds=(self.last - n) * -1))
         if gan.poll():
             empt = gan.recv()
             self.last = n
-            log_text.set("{}Logan is running{}".format(random.randint(3, 12) * ".", random.randint(3, 12) * "."))
+            randot = random.randint(4, 40)
+            log_text.set("{}Logan is running{}".format(randot,
+                                                       40 - randot))
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
-            self.log_text.set("Last Logan's request {} seconds ago.".format(delta))
+            self.log_text.set("Last Logan's request {} ago.".format(delta))
 
         log.after(1000, self.loganica)
 
