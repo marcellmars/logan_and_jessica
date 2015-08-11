@@ -20,8 +20,8 @@ class Proxsica:
         self.init_states()
 
     def init_states(self):
-        self.play_mode = "tunnel"
         self.last = time.mktime(datetime.datetime.now().timetuple())
+        self.play_mode = "tunnel"
         self.ssh_proc, self.url, self.p = [None] * 3
 
     def play(self):
@@ -51,7 +51,16 @@ class Proxsica:
         sa = self.server.httpd.socket.getsockname()
         if sa and self.ssh_proc:
             self.play_mode = "copy"
-            self.root.nametowidget("stop").grid(row=0, column=1)
+
+            self.root.children["tunnel"].grid_forget()
+            self.root.children["tunnel"].grid(row=1,
+                                              column=0,
+                                              sticky=Tkinter.W + Tkinter.E)
+
+            self.root.children["stop"].grid(row=1,
+                                            column=1,
+                                            sticky=Tkinter.W + Tkinter.E)
+
             self.label_text.set("Copy Logan's URL")
             # self.label_text.set("Serving HTTP Proxy on {} port {}...\n\
             prefix = "https://jessica.memoryoftheworld.org"
@@ -72,6 +81,12 @@ class Proxsica:
             self.p = None
 
         self.root.nametowidget("stop").grid_forget()
+        self.root.children["tunnel"].grid_forget()
+        self.root.children["tunnel"].grid(row=1,
+                                          column=0,
+                                          columnspan=2,
+                                          sticky=Tkinter.W + Tkinter.E)
+
         self.label_text.set("Set up a tunnel")
         self.log_text.set("Waiting for Logan...")
         self.init_states()
@@ -81,10 +96,12 @@ class Proxsica:
         delta = "{:0>8}".format(datetime.timedelta(seconds=(self.last - n) * -1))
         if gan.poll():
             empt = gan.recv()
-            self.last = n
-            randot = random.randint(4, 40)
-            log_text.set("{}Logan is running{}".format(randot * ".",
-                                                       (40 - randot) * "."))
+            if self.play_mode == "tunnel":
+                self.last = n
+                randot = random.randint(8, 56)
+                log_text.set("{}Logan is running{}{}".format(randot * ".",
+                                                             (56 - randot) * ".",
+                                                             8 * "."))
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
             self.log_text.set("Last Logan's request {} ago.".format(delta))
 
@@ -92,29 +109,68 @@ class Proxsica:
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
+    root['bg'] = 'white'
     label_text = Tkinter.StringVar()
     log_text = Tkinter.StringVar()
     label_text.set("Set up a tunnel")
     log_text.set("Waiting for Logan...")
+    photo = Tkinter.PhotoImage(file="jessica.gif")
 
     gan, ica = Pipe()
 
     proksica = Proxsica(ica, root, label_text, log_text)
+
     stop = Tkinter.Button(root,
                           name="stop",
+                          bg="white",
+                          fg="#2B0000",
+                          activebackground="#EEEAEA",
+                          font="-weight bold",
+                          highlightthickness=1,
+                          relief=Tkinter.FLAT,
+                          borderwidth=0,
                           text="Stop the tunnel",
+                          anchor=Tkinter.W,
                           command=proksica.stop)
+
     url = Tkinter.Button(root,
-                         name="url",
+                         name="tunnel",
+                         bg="white",
+                         fg="#2B0000",
+                         activebackground="#EEEAEA",
+                         font="-weight bold",
+                         highlightthickness=1,
+                         relief=Tkinter.FLAT,
+                         borderwidth=0,
                          textvariable=label_text,
+                         anchor=Tkinter.W,
                          command=proksica.play)
+
     log = Tkinter.Label(root,
                         name="log",
+                        bg="#EEEAEA",
+                        fg="#826969",
                         textvariable=log_text,
-                        justify=Tkinter.LEFT,
+                        padx=16,
                         anchor=Tkinter.W)
-    url.grid(row=0, column=0)
-    log.grid(row=1, columnspan=2, sticky=Tkinter.SW)
-    last = time.mktime(datetime.datetime.now().timetuple())
+
+    jessica = Tkinter.Label(root,
+                            name="jessica",
+                            anchor=Tkinter.W,
+                            borderwidth=0,
+                            image=photo)
+    jessica.grid(row=0,
+                 column=0,
+                 columnspan=2)
+
+    url.grid(row=1,
+             column=0,
+             columnspan=2,
+             sticky=Tkinter.W + Tkinter.E)
+
+    log.grid(row=2,
+             columnspan=2,
+             sticky=Tkinter.W + Tkinter.E)
+
     log.after(2000, proksica.loganica)
     root.mainloop()
