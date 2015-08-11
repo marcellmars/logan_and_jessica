@@ -84,7 +84,7 @@ class Proxsica:
             self.last = n
             randot = random.randint(4, 40)
             log_text.set("{}Logan is running{}".format(randot * ".",
-                                                       40 - randot * "."))
+                                                       (40 - randot) * "."))
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
             self.log_text.set("Last Logan's request {} ago.".format(delta))
 
