@@ -30,6 +30,7 @@ class Proxsica:
             self.root.clipboard_append(self.url)
             return
 
+        self.loganica()
         self.portjess = random.randint(1025, 48000)
         self.server = proxsicag.Proxy(self.ica, self.portjess, PORT)
         self.p = Process(target=self.server.start_server)
@@ -92,20 +93,28 @@ class Proxsica:
         self.init_states()
 
     def loganica(self):
+        # self.root.update()
         n = time.mktime(datetime.datetime.now().timetuple())
-        delta = "{:0>8}".format(datetime.timedelta(seconds=(self.last - n) * -1))
+        delta = (self.last - n) * -1
+        deltas= "{:0>8}".format(datetime.timedelta(seconds=delta))
+        randot = random.randint(8, 56)
         if gan.poll():
+            self.last = n
             empt = gan.recv()
-            if self.play_mode == "tunnel":
-                self.last = n
-                randot = random.randint(8, 56)
-                log_text.set("{}Logan is running{}{}".format(randot * ".",
-                                                             (56 - randot) * ".",
-                                                             8 * "."))
+            print(empt)
+            if self.play_mode == "copy":
+                self.log_text.set("{}Logan is running{}{}".format(randot * ".",
+                                                                  (56 - randot) * ".",
+                                                                  8 * "."))
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
-            self.log_text.set("Last Logan's request {} ago.".format(delta))
+            if delta > 3:
+                self.log_text.set("Last Logan's request {} ago.".format(deltas))
+            # else:
+            #     self.log_text.set("{}Logan is running{}{}".format(randot * ".",
+            #                                                       (56 - randot) * ".",
+            #                                                       8 * "."))
 
-        log.after(1000, self.loganica)
+        self.root.after(10, self.loganica)
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
@@ -172,5 +181,5 @@ if __name__ == '__main__':
              columnspan=2,
              sticky=Tkinter.W + Tkinter.E)
 
-    log.after(2000, proksica.loganica)
+    # root.after(2000, proksica.loganica)
     root.mainloop()

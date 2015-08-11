@@ -9,7 +9,7 @@ import urlparse
 import threading
 import base64
 import uuid
-from time import gmtime, strftime
+from time import gmtime, strftime, time
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import ThreadingMixIn
@@ -84,8 +84,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         #     print("SSH TUNNEL KAPUTT!")
         address = self.path.split(':', 1)
         # print("do_CONNECT ADDRESS: {}".format(address))
-        self.log_text.send("Last packets went through at: ".format(strftime("%H:%M:%S",
-                                                                            gmtime())))
+        self.log_text.send(time())
         try:
             address[1] = int(address[1])
         except:
@@ -122,9 +121,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
 
         req = self
         # print("do_GET ADDRESS: {}".format(req.path))
-        self.log_text.send("Last packets went through at: ".format(strftime("%H:%M:%S",
-                                                                            gmtime())))
-
+        self.log_text.send(time())
         content_length = int(req.headers.get('Content-Length', 0))
         req_body = self.rfile.read(content_length) if content_length else None
         if req.path[0] == '/':
