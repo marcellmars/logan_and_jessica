@@ -93,19 +93,19 @@ class Proxsica:
         self.init_states()
 
     def loganica(self):
-        # self.root.update()
+        self.root.update()
         n = time.mktime(datetime.datetime.now().timetuple())
         delta = (self.last - n) * -1
         deltas= "{:0>8}".format(datetime.timedelta(seconds=delta))
-        randot = random.randint(8, 56)
+        randot = random.randint(4, 24)
         if gan.poll():
             self.last = n
             empt = gan.recv()
             print(empt)
             if self.play_mode == "copy":
                 self.log_text.set("{}Logan is running{}{}".format(randot * ".",
-                                                                  (56 - randot) * ".",
-                                                                  8 * "."))
+                                                                  (24 - randot) * ".",
+                                                                  4 * "."))
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
             if delta > 3:
                 self.log_text.set("Last Logan's request {} ago.".format(deltas))
@@ -114,7 +114,7 @@ class Proxsica:
             #                                                       (56 - randot) * ".",
             #                                                       8 * "."))
 
-        self.root.after(10, self.loganica)
+        self.root.after(50, self.loganica)
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
