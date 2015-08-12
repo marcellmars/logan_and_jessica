@@ -109,10 +109,6 @@ class Proxsica:
         elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
             if delta > 3:
                 self.log_text.set("Last Logan's request {} ago.".format(deltas))
-            # else:
-            #     self.log_text.set("{}Logan is running{}{}".format(randot * ".",
-            #                                                       (56 - randot) * ".",
-            #                                                       8 * "."))
 
         self.root.after(50, self.loganica)
 

@@ -9,7 +9,7 @@ import urlparse
 import threading
 import base64
 import uuid
-from time import gmtime, strftime, time
+from time import time
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
 from SocketServer import ThreadingMixIn
@@ -45,8 +45,8 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
             return
         self.log_message(format, *args)
 
-    # def log_message(self, format, *args):
-    #     pass
+    def log_message(self, format, *args):
+        pass
 
     def do_HEAD(self):
         self.send_response(200)
