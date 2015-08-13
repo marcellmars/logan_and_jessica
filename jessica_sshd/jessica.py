@@ -371,6 +371,7 @@ class Proxsica:
                                           '-o', 'StrictHostKeyChecking=no',
                                           '-o', 'ServerAliveINterval=60',
                                           '-o', 'ExitOnForwardFailure=yes',
+                                          '-o', 'LogLevel=quiet',
                                           '-l', 'tunnel',
                                           '-R', '{}:localhost:{}'.format(self.portjess,
                                                                          PORT),
