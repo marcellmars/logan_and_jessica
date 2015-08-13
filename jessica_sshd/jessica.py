@@ -339,6 +339,8 @@ class Proxsica:
         self.label_text = label_text
         self.log_text = log_text
         self.ica = ica
+        self.big_bang = True
+        self.logan_ran = False
         self.init_states()
 
     def init_states(self):
@@ -347,12 +349,16 @@ class Proxsica:
         self.ssh_proc, self.url, self.p = [None] * 3
 
     def play(self):
-        if self.play_mode != "tunnel" and self.url:
+        if self.big_bang:
+            self.loganica()
+            self.big_bang = False
+        elif self.play_mode == "copy" or self.play_mode == "copied" and self.url:
             self.root.clipboard_clear()
             self.root.clipboard_append(self.url)
+            self.log_text.set("URL has been copied. Send it to Logan.")
+            self.play_mode = "copied"
             return
 
-        self.loganica()
         self.portjess = random.randint(1025, 48000)
         self.server = Proxy(self.ica, self.portjess, PORT)
         self.p = Process(target=self.server.start_server)
@@ -374,6 +380,7 @@ class Proxsica:
         sa = self.server.httpd.socket.getsockname()
         if sa and self.ssh_proc:
             self.play_mode = "copy"
+            self.log_text.set("Logan is waiting for the tunnel's URL...")
 
             self.root.children["tunnel"].grid_forget()
             self.root.children["tunnel"].grid(row=1,
@@ -385,7 +392,6 @@ class Proxsica:
                                             sticky=Tkinter.W + Tkinter.E)
 
             self.label_text.set("Copy Logan's URL")
-            # self.label_text.set("Serving HTTP Proxy on {} port {}...\n\
             prefix = "https://jessica.memoryoftheworld.org"
             self.url = "{}/{}/{}:{}".format(prefix,
                                             self.portjess,
@@ -403,7 +409,7 @@ class Proxsica:
             self.server.stop_server()
             self.p = None
 
-        self.root.nametowidget("stop").grid_forget()
+        self.root.children["stop"].grid_forget()
         self.root.children["tunnel"].grid_forget()
         self.root.children["tunnel"].grid(row=1,
                                           column=0,
@@ -411,7 +417,8 @@ class Proxsica:
                                           sticky=Tkinter.W + Tkinter.E)
 
         self.label_text.set("Set up a tunnel")
-        self.log_text.set("Waiting for Logan...")
+        self.log_text.set("Logan is waiting for the tunnel...")
+        self.logan_ran = False
         self.init_states()
 
     def loganica(self):
@@ -423,16 +430,23 @@ class Proxsica:
         if gan.poll():
             self.last = n
             empt = gan.recv()
-            print(empt)
-            if self.play_mode == "copy":
+            if self.play_mode == "copied":
+                self.logan_ran = True
                 self.log_text.set("{}Logan is running{}{}".format(randot * ".",
                                                                   (24 - randot) * ".",
                                                                   4 * "."))
-        elif log_text.get() != "Waiting for Logan..." and self.play_mode == "copy":
-            if delta > 3:
-                self.log_text.set("Last Logan's request {} ago.".format(deltas))
+        elif self.logan_ran and delta > 3:
+            self.log_text.set("Last Logan's request {} ago.".format(deltas))
+
 
         self.root.after(50, self.loganica)
+
+    def close_all(self):
+        self.stop()
+        self.root.destroy()
+
+
+
 
 if __name__ == '__main__':
     root = Tkinter.Tk()
@@ -440,7 +454,7 @@ if __name__ == '__main__':
     label_text = Tkinter.StringVar()
     log_text = Tkinter.StringVar()
     label_text.set("Set up a tunnel")
-    log_text.set("Waiting for Logan...")
+    log_text.set("Logan is waiting for the tunnel...")
     # photo = Tkinter.PhotoImage(file="jessica.gif")
     photo = Tkinter.PhotoImage(data=PHOTO)
 
@@ -500,4 +514,5 @@ if __name__ == '__main__':
              columnspan=2,
              sticky=Tkinter.W + Tkinter.E)
 
+    root.protocol("WM_DELETE_WINDOW", proksica.close_all)
     root.mainloop()
