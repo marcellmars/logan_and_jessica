@@ -2,6 +2,8 @@ var userjess = "init";
 var passjess = "init";
 var realmjess = "init";
 var portjess = 8787;
+var ssh_tab_id = -1;
+var ssh_active = false;
 
 var config = {
     mode: "fixed_servers",
@@ -16,43 +18,64 @@ var config = {
     }
 };
 
-var foobar = function() {
-    console.log("foobar!")
-}
+var ssh_tab_active = function() {
+    check_ssh_tab();
+    // return ssh_active;
+};
 
-setProxy = function() {
+var check_ssh_tab = function() {
+    ssh_active = false;
+    chrome.tabs.query({},
+                      function(tabArray) {
+                          tabArray.filter(function(tab,
+                                                   index,
+                                                   array) {
+                              if (tab.id === ssh_tab_id) {
+                                  ssh_active = true;
+                              }
+                          });
+                      });
+};
+
+var setProxy = function() {
     chrome.proxy.settings.set(
         {value: config, scope: 'regular'},
         function() {});
-}
+};
 
-clearProxy = function() {
+var clearProxy = function() {
     chrome.proxy.settings.clear(
         {scope: 'regular'},
         function() {});
-}
+};
 
-getProxy = function() {
+var getProxy = function() {
     chrome.proxy.settings.get(
         {incognito: false},
         function(details) {
             console.log(details);
         });
-}
+};
+
+var closeTab = function() {
+    if (ssh_active === true) {
+        chrome.tabs.remove(ssh_tab_id);
+    }
+};
 
 var authListener = function(details) {
     if (!details.isProxy || details.realm !== realmjess) {
-        console.log("NOT PROXY!")
+        console.log("NOT PROXY!");
         return {cancel:true};
     } else {
-        console.log(userjess, passjess)
+        console.log(userjess, passjess);
         return {authCredentials:{username: userjess,
-                                 password: passjess}}
+                                 password: passjess}};
     }
-}
+};
 
-addProxyAuthorization = function (user, pass) {
-    console.log("addProxyAuthorization")
+var addProxyAuthorization = function (user, pass) {
+    console.log("addProxyAuthorization");
     userjess = user;
     passjess = pass;
     realmjess = "Logan & Jessica " + user.substring(0,8);
@@ -61,4 +84,4 @@ addProxyAuthorization = function (user, pass) {
                                                  {urls:["<all_urls>"]},
                                                  ['blocking']);
 
-}
+};

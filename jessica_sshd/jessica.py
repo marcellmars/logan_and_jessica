@@ -165,7 +165,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
 
     def check_authorization(self):
         if self.headers.get('Proxy-Authorization') is None:
-            print("NO KEY: {}".format(self.key))
+            # print("NO KEY: {}".format(self.key))
             self.do_AUTHHEAD()
             self.wfile.write('no auth header received')
         elif self.headers.get('Proxy-Authorization') == 'Basic ' + self.key:
@@ -173,7 +173,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
         elif self.headers.get('Proxy-Authorization') != 'Basic ' + self.key:
             global DDOS
             DDOS.append(self.key)
-            print("DDOS: {}, LENGTH: {}".format(DDOS, len(DDOS)))
+            # print("DDOS: {}, LENGTH: {}".format(DDOS, len(DDOS)))
             self.do_AUTHHEAD()
             counter = len([i for i in DDOS if i == self.key])
             if counter > 2:
@@ -232,7 +232,7 @@ class ProxyRequestHandler(SimpleHTTPRequestHandler):
                 req.path = "https://%s%s" % (req.headers['Host'], req.path)
                 # print("GET HTTPS: {}".format(req.path))
             else:
-                req.path = "http://%s%s" % (req.headers['Host'], req.path) 
+                req.path = "http://%s%s" % (req.headers['Host'], req.path)
 
         u = urlparse.urlsplit(req.path)
         scheme = u.scheme
@@ -439,14 +439,11 @@ class Proxsica:
         elif self.logan_ran and delta > 3:
             self.log_text.set("Last Logan's request {} ago.".format(deltas))
 
-
         self.root.after(50, self.loganica)
 
     def close_all(self):
         self.stop()
         self.root.destroy()
-
-
 
 
 if __name__ == '__main__':
