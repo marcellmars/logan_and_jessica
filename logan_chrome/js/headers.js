@@ -3,7 +3,6 @@ var passjess = "init";
 var realmjess = "init";
 var portjess = 8787;
 var ssh_tab_id = -1;
-var ssh_active = false;
 
 var config = {
     mode: "fixed_servers",
@@ -16,25 +15,6 @@ var config = {
         bypassList: ["localhost",
                      "127.0.0.1"]
     }
-};
-
-var ssh_tab_active = function() {
-    check_ssh_tab();
-    // return ssh_active;
-};
-
-var check_ssh_tab = function() {
-    ssh_active = false;
-    chrome.tabs.query({},
-                      function(tabArray) {
-                          tabArray.filter(function(tab,
-                                                   index,
-                                                   array) {
-                              if (tab.id === ssh_tab_id) {
-                                  ssh_active = true;
-                              }
-                          });
-                      });
 };
 
 var setProxy = function() {
@@ -54,13 +34,21 @@ var getProxy = function() {
         {incognito: false},
         function(details) {
             console.log(details);
+            proxy = details.value.mode;
         });
 };
 
 var closeTab = function() {
-    if (ssh_active === true) {
-        chrome.tabs.remove(ssh_tab_id);
-    }
+chrome.tabs.query({},
+                    function(tabArray) {
+                        tabArray.filter(function(tab,
+                                                index,
+                                                array) {
+                            if (tab.id === ssh_tab_id) {
+                                chrome.tabs.remove(ssh_tab_id);
+                            }
+                        });
+                    });
 };
 
 var authListener = function(details) {
