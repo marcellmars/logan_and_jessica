@@ -29,14 +29,14 @@ var clearProxy = function() {
         function() {});
 };
 
-var getProxy = function() {
-    chrome.proxy.settings.get(
-        {incognito: false},
-        function(details) {
-            console.log(details);
-            proxy = details.value.mode;
-        });
-};
+// var getProxy = function() {
+//     chrome.proxy.settings.get(
+//         {incognito: false},
+//         function(details) {
+//             console.log(details);
+//             proxy = details.value.mode;
+//         });
+// };
 
 var closeTab = function() {
 chrome.tabs.query({},

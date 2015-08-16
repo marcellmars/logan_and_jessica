@@ -30,51 +30,12 @@ var setStatus = function() {
                                                             }
                                                             else {
                                                                 bp.clearProxy();
-                                                                document.getElementById("status").innerText = "No tunnel to Jessica. Connected directrly...";
+                                                                document.getElementById("status").innerText = "No tunnel to Jessica. Connected directly...";
                                                             }
                                                         }
                                                     });
                     });
 };
-
-
-var getArgs = function() {
-    setStatus();
-    chrome.tabs.query({active:true,
-                       currentWindow:true},
-                      function(tabArray) {
-                          // tab = tabArray[0];
-                          // url = tab.url;
-                      });
-
-    // args = url.split("/");
-    // userpass = args[args.length -1].split(":");
-    // port = args[args.length - 2];
-    // username = userpass[0];
-    // password = userpass[1];
-    // bp.userjess = username;
-    // bp.passjess = password;
-    // bp.portjess = port;
-    // bp.realmjess = "Logan & Jessica " + username.substring(0,8);
-    // //bp.addProxyAuthorization(username, password)
-
-    // pp = document.getElementById("popup");
-    // pp.innerHTML = "";
-    // pp.appendChild(document.createTextNode("Jessica invited you to run together..."));
-    // pp.appendChild(document.createElement("br"));
-
-    // pp.appendChild(document.createTextNode("username: " + username));
-    // pp.appendChild(document.createElement("br"));
-    // pp.appendChild(document.createTextNode("password: " + password));
-    // pp.appendChild(document.createElement("br"));
-
-    // pp.appendChild(document.createTextNode("port: " + port));
-    // pp.appendChild(document.createElement("br"));
-    // pp.appendChild(document.createElement("br"));
-    // pp.innerHTML += "<a href='../html/nassh.html#tunnel@ssh.pede.rs:443' target='_blank'>RUN</a>";
-    // pp.appendChild(document.createElement("br"));
-};
-
 
 var compose = function() {
     setStatus();
@@ -99,6 +60,7 @@ var compose = function() {
                                                      function(tab) {
                                                          bp.ssh_tab_id = tab.id;
                                                      });
+                                  setTimeout(2000, setStatus);
                               }
                               else if (username !== bp.userjess) {
                                   alert("Please, first close previous tunnel.");
@@ -108,9 +70,9 @@ var compose = function() {
                           }
                           else if (ssh_exists === true) {
                               bp.setProxy();
+                              setStatus();
                           }
                       });
-    setTimeout(2000, setStatus);
 };
 
 var direct = function() {
@@ -124,26 +86,8 @@ var reset = function() {
     setStatus();
 };
 
-// document.addEventListener("DOMContentLoaded", function() {
-//     document.getElementById("parse").addEventListener("click", getArgs);
-//     document.getElementById("parse").click();
-// });
-
-// document.addEventListener("DOMContentLoaded", function() {
-//     document.getElementById("setproxy").addEventListener("click", bp.setProxy);
-// });
-
-// document.addEventListener("DOMContentLoaded", function() {
-//     document.getElementById("clearproxy").addEventListener("click", bp.clearProxy);
-// });
-
-// document.addEventListener("DOMContentLoaded", function() {
-//     document.getElementById("getproxy").addEventListener("click", bp.getProxy);
-// });
-
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("viajessica").addEventListener("click", compose);
-    // getArgs();
     setStatus();
 });
 
