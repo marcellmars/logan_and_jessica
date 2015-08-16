@@ -8,14 +8,46 @@
         float:left;
         white-space:nowrap;
         }
+       .button {
+           color: #2b0000;
+           font: bold 1.2em sans-serif;
+           background: #EEEAEA;
+           border: 1px solid #EEEAEA;
+           padding: 2px 7px 2px 7px;
+           cursor: pointer;
+       }
+       .button:hover {
+           background: #826969;
+           border: 1px solid #826969;
+           color: #EEEAEA;
+       }
+       .button:active {
+           color: #e5ec4e;
+           background: #c8b16f;
+           border-top: 0px solid;
+           border-left: 0px solid;
+           border-right: 2px solid #c8b16f;
+           border-bottom: 2px solid #c8b16f;
+       }
+       .header {
+           margin-bottom: 24px;
+       }
+       .status {
+           margin-top: 16px;
+           margin-bottom: 0px;
+           font: 0.8em sans-serif;
+           background: white;
+           color: #826969;
+       }
     </style>
     </head>
     <body>
-      <img src="../images/logan_and.png"/>
-      <div id="popup">Jessica invited you to run together...</div>
-      <button id="viajessica">Run via Jessica</button>
-      <button id="direct">Go direct</button>
-      <button id="reset">Reset</button>
-      <!-- <div id="terminal"></div> -->
+      <img class="header" src="../images/logan_and.png"/>
+      <span class="button" id="viajessica">VIA JESSICA</span>
+      <span class="button" id="direct">DIRECT</span>
+      <span class="button" id="reset">RESET</span>
+      <!--       <div class="status">Tunnel to Jessica set. Going directly to the internet.</div> -->
+      <!--       <div class="status">Going to the internet via Jessica...</div> -->
+      <!--       <div class="status">No tunnel to Jessica. Going directly to the internet.</div> -->
     </body>
-</html>
+</html> 
