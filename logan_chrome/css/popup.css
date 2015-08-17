@@ -8,7 +8,7 @@
     display: inline-block;
 }
 
-.button {
+.button, .jessica {
     color: #2b0000;
     font: bold 1.2em sans-serif;
     background: #EEEAEA;
@@ -17,7 +17,7 @@
     cursor: pointer;
 }
 
-.button:hover {
+.button:hover, .jessica:hover {
     background: #826969;
     border: 1px solid #826969;
     color: #EEEAEA;
@@ -30,6 +30,15 @@
     border-left: 0px solid;
     border-right: 2px solid #c8b16f;
     border-bottom: 2px solid #c8b16f;
+}
+
+.jessica:active {
+    color: #e5ec4e;
+    background: #91c437;
+    border-top: 0px solid;
+    border-left: 0px solid;
+    border-right: 2px solid #91c437;
+    border-bottom: 2px solid #91c437;
 }
 
 .header {
