@@ -1,24 +1,40 @@
 var bp = chrome.extension.getBackgroundPage();
 var evc = -1;
 
-var setFlag = function(geoip) {
-    // console.log("setFlag! " + evc);
-    if (geoip.country_code !== ""){
-        bp.geo_code = geoip.country_code.toUpperCase();
-        bp.geo_country = geoip.country;
-        bp.setStatus();
-    }
-    else {
-        bp.geo_country = "";
-        bp.geo_code = "  ";
-    }
+var getJSON = function(url) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status == 200) {
+                resolve(xhr.response);
+            } else {
+                reject(status);
+            }
+        };
+        xhr.send();
+    });
 };
 
 var setFlags = function() {
-    var script = document.createElement('script');
-    script.src = 'https://www.telize.com/geoip?callback=setFlag';
-    document.body.appendChild(script);
-    document.body.removeChild(script);
+    getJSON("https://www.telize.com/geoip").then(
+        function(geoip) {
+            if (geoip.country_code !== ""){
+                bp.geo_code = geoip.country_code.toUpperCase();
+                bp.geo_country = geoip.country;
+                bp.setStatus();
+            }
+            else {
+                bp.geo_country = "";
+                bp.geo_code = "  ";
+            }
+        }, function(status) {
+            console.log(status);
+            bp.geo_country = "";
+            bp.geo_code = "  ";
+        });
 };
 
 var setPopUp = function() {
