@@ -22,12 +22,12 @@
     ],
 
     "icons": {
-        "16": "icons/ampersandman_init_16.png",
-        "19": "icons/ampersandman_init_19.png",
-        "32": "icons/ampersandman_init_32.png",
-        "38": "icons/ampersandman_init_38.png",
-        "48": "icons/ampersandman_init_48.png",
-        "128": "icons/ampersandman_init_128.png"
+        "16": "icons/ampersandman_chrome_16.png",
+        "19": "icons/ampersandman_chrome_19.png",
+        "32": "icons/ampersandman_chrome_32.png",
+        "38": "icons/ampersandman_chrome_38.png",
+        "48": "icons/ampersandman_chrome_48.png",
+        "128": "icons/ampersandman_chrome_128.png"
     },
 
     "browser_action": {
