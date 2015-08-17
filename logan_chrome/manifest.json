@@ -5,7 +5,7 @@
     "description": "Jessica invites Logan to run together...",
     "version": "0.1",
     "default_locale": "en",
-    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.telize.com; object-src 'self'",
     "offline_enabled": true,
     "permissions": [
         "proxy",

@@ -512,5 +512,6 @@ if __name__ == '__main__':
              columnspan=2,
              sticky=Tkinter.W + Tkinter.E)
 
+    root.wm_title("& Jessica")
     root.protocol("WM_DELETE_WINDOW", proksica.close_all)
     root.mainloop()

@@ -2,7 +2,24 @@ var bp = chrome.extension.getBackgroundPage();
 var ssh_exists = false;
 var proxy_exists = false;
 
+var setFlags = function(geoip) {
+    var loc = document.createElement("div");
+    var flg = document.createElement("span");
+    loc.setAttribute('class', 'tlag');
+    flg.setAttribute('class', 'flag ' + 'flag-' + geoip.country_code.toLocaleLowerCase());
+
+    var txt = document.createTextNode("Current location: " + geoip.country + "  ");
+    loc.appendChild(txt);
+    loc.appendChild(flg);
+    document.body.appendChild(loc);
+};
+
 var setStatus = function() {
+    var script = document.createElement('script');
+    script.src = 'https://www.telize.com/geoip?callback=setFlags';
+    document.body.appendChild(script);
+    document.body.removeChild(script);
+
     ssh_exists = false;
     proxy_exists = false;
     chrome.tabs.query({},
