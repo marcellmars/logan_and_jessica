@@ -53,6 +53,12 @@ var promiseTabsQuery = function(options) {
     });
 };
 
+var promiseGetBadgeText = function(options) {
+    return new Promise(function(resolve, reject) {
+        chrome.browserAction.getBadgeText(options, resolve);
+    });
+};
+
 var compose = function() {
     // setStatus();
     promiseTabsQuery({})
@@ -228,26 +234,28 @@ var addProxyAuthorization = function (user, pass) {
 var tabListener = function() {
     if (tevc !== evc) {
         tevc = evc;
-        chrome.tabs.query({},
-                          function(tabArray) {
-                              var ssh_e = false;
-                              tabArray.filter(function(tab,
-                                                       index,
-                                                       array) {
-                                  if (tab.id === ssh_tab_id) {
-                                      ssh_e = true;
-                                  }
-                              });
-                              ssh_exists = ssh_e;
-                          });
-
-        chrome.browserAction.getBadgeText({},
-                                          function(t) {
-                                              if (t !== "" && ssh_exists === false) {
-                                                  status_text = "No tunnel to Jessica. Connected directly...";
-                                                  chrome.browserAction.setBadgeText({text: ""});
-                                              }
-                                          });
+        promiseTabsQuery({})
+            .then(
+                function(tabArray) {
+                    var ssh_e = false;
+                    tabArray.filter(function(tab,
+                                             index,
+                                             array) {
+                        if (tab.id === ssh_tab_id) {
+                            ssh_e = true;
+                        }
+                    });
+                    ssh_exists = ssh_e;
+                })
+            .then(promiseGetBadgeText({})
+                  .then(
+                      function(t) {
+                          if (t !== "" && ssh_exists === false) {
+                              status_text = "No tunnel to Jessica. Connected directly...";
+                              chrome.browserAction.setBadgeText({text: ""});
+                          }
+                      }))
+            .then(function() {});
     };
 };
 
