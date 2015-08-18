@@ -57,7 +57,7 @@ var setStatus = function() {
                     });
 };
 
-var promiseTabs = function(options) {
+var promiseCreateTabs = function(options) {
     return new Promise(function(resolve, reject) {
         chrome.tabs.create(options, resolve);
     });
@@ -80,7 +80,7 @@ var compose = function() {
                               // if (ssh_tab_active() !== true) {
                               if (ssh_exists !== true) {
                                   portjess = port;
-                                  promiseTabs({'url': "../html/nassh.html#tunnel@ssh.pede.rs:443",
+                                  promiseCreateTabs({'url': "../html/nassh.html#tunnel@ssh.pede.rs:443",
                                                'pinned': true,
                                                'active': false}).then(function(tab) {
                                                    ssh_tab_id = tab.id;
@@ -94,13 +94,11 @@ var compose = function() {
                               }
                               else if (username !== userjess) {
                                   alert("Please, first close previous tunnel.");
-                                  clearProxy();
-                                  closeTab();
+                                  reset();
                                   }
                           }
                           else if (ssh_exists === true) {
                               setProxy();
-                              setStatus();
                           }
                           else {
                               chrome.tabs.query({},
@@ -124,17 +122,43 @@ var compose = function() {
                       });
 };
 
-var direct = function() {
-    evc ++;
-    clearProxy();
-    setStatus();
+var promiseClearProxy = function(options) {
+    return new Promise(function(resolve, reject) {
+        chrome.proxy.settings.clear(options, resolve);
+    });
+};
+
+var promiseSetProxy = function(options) {
+    return new Promise(function(resolve, reject) {
+        chrome.proxy.settings.set(options, resolve);
+    });
+};
+
+var promiseTabsQuery = function(options) {
+    return new Promise(function(resolve, reject) {
+        chrome.tabs.query(options, resolve);
+    });
 };
 
 var reset = function() {
-    evc ++;
-    clearProxy();
-    closeTab();
-    setStatus();
+    promiseClearProxy(
+        {scope: 'regular'},
+        function() {})
+        .then(promiseTabsQuery({})
+              .then(
+                  function(tabArray) {
+                      tabArray.filter(function(tab,
+                                               index,
+                                               array) {
+                          if (tab.id === ssh_tab_id) {
+                              chrome.tabs.remove(ssh_tab_id);
+                          }
+                      });
+                  }))
+        .then(function() {
+            setStatus();
+        })
+        .then(function() {});
 };
 
 var config = {
@@ -151,17 +175,21 @@ var config = {
 };
 
 var setProxy = function() {
-    evc ++;
-    chrome.proxy.settings.set(
-        {value: config, scope: 'regular'},
-        function() {});
+    promiseSetProxy(
+        {value: config, scope: 'regular'})
+        .then(function() {
+            setStatus();
+        })
+        .then(function() {});
 };
 
 var clearProxy = function() {
-    evc ++;
-    chrome.proxy.settings.clear(
-        {scope: 'regular'},
-        function() {});
+    promiseClearProxy(
+        {scope: 'regular'})
+        .then(function() {
+            setStatus();
+        })
+        .then(function() {});
 };
 
 // var getProxy = function() {
@@ -172,20 +200,6 @@ var clearProxy = function() {
 //             proxy = details.value.mode;
 //         });
 // };
-
-var closeTab = function() {
-    evc ++;
-    chrome.tabs.query({},
-                        function(tabArray) {
-                            tabArray.filter(function(tab,
-                                                    index,
-                                                    array) {
-                                if (tab.id === ssh_tab_id) {
-                                    chrome.tabs.remove(ssh_tab_id);
-                                }
-                            });
-                        });
-};
 
 var authListener = function(details) {
     if (!details.isProxy || details.realm !== realmjess) {

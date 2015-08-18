@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("direct").addEventListener("click", bp.direct);
+    document.getElementById("direct").addEventListener("click", bp.clearProxy);
 });
 
 document.addEventListener("DOMContentLoaded", function() {
