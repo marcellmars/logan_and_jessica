@@ -24,7 +24,7 @@ var setFlags = function() {
             if (geoip.country_code !== ""){
                 bp.geo_code = geoip.country_code.toUpperCase();
                 bp.geo_country = geoip.country;
-                bp.setStatus();
+                chrome.browserAction.setBadgeText({text: bp.geo_code});
             }
             else {
                 bp.geo_country = "";
@@ -79,4 +79,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("reset").addEventListener("click", bp.reset);
-});
+})

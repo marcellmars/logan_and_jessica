@@ -16,110 +16,23 @@ var status_text = "No tunnel to Jessica. Connected directly...";
 var evc = 0;
 var tevc = -1;
 
-var setStatus = function() {
-    ssh_exists = false;
-    proxy_exists = false;
-    chrome.tabs.query({},
-                    function(tabArray) {
-                        tabArray.filter(function(tab,
-                                                index,
-                                                array) {
-                            if (tab.id === ssh_tab_id) {
-                                ssh_exists = true;
-                            }
-                        });
-
-                        chrome.proxy.settings.get({incognito: false},
-                                                    function(details) {
-                                                        if (details.value.mode === "system") {
-                                                            if (ssh_exists === true) {
-                                                                status_text = "Tunnel to Jessica established but not in use. Connected directly...";
-                                                                chrome.browserAction.setBadgeBackgroundColor({color: [253, 128, 68, 128]});
-                                                                chrome.browserAction.setBadgeText({text: geo_code});
-                                                            }
-                                                            else {
-                                                                status_text = "No tunnel to Jessica. Connected directly...";
-                                                                chrome.browserAction.setBadgeText({text: ""});
-                                                            }
-                                                        } else if (details.value.mode === "fixed_servers") {
-                                                            if (ssh_exists === true) {
-                                                                status_text = "Tunnel to Jessica set. Connected via Jessica...";
-                                                                chrome.browserAction.setBadgeBackgroundColor({color: [145, 196, 55, 128]});
-                                                                chrome.browserAction.setBadgeText({text: geo_code});
-                                                            }
-                                                            else {
-                                                                clearProxy();
-                                                                status_text = "No tunnel to Jessica. Connected directly...";
-                                                                chrome.browserAction.setBadgeText({text: ""});
-                                                            }
-                                                        }
-                                                    });
-                    });
+var config = {
+    mode: "fixed_servers",
+    rules: {
+        singleProxy: {
+            scheme: "http",
+            host: "127.0.0.1",
+            port:6666
+        },
+        bypassList: ["localhost",
+                     "127.0.0.1"]
+    }
 };
 
 var promiseCreateTabs = function(options) {
     return new Promise(function(resolve, reject) {
         chrome.tabs.create(options, resolve);
     });
-};
-
-var compose = function() {
-    evc ++;
-    setStatus();
-    chrome.tabs.query({highlighted:true,
-                       currentWindow:true},
-                      function(tabArray) {
-                          var tab = tabArray[0];
-                          if (tab.url.substr(0, 36) === "https://jessica.memoryoftheworld.org") {
-                              var url = tab.url;
-                              var args = url.split("/");
-                              var userpass = args[args.length -1].split(":");
-                              var port = args[args.length - 2];
-                              var username = userpass[0];
-                              var password = userpass[1];
-                              // if (ssh_tab_active() !== true) {
-                              if (ssh_exists !== true) {
-                                  portjess = port;
-                                  promiseCreateTabs({'url': "../html/nassh.html#tunnel@ssh.pede.rs:443",
-                                               'pinned': true,
-                                               'active': false}).then(function(tab) {
-                                                   ssh_tab_id = tab.id;
-                                               }).then(function() {
-                                                   addProxyAuthorization(username, password);
-                                               }).then(function() {
-                                                   setProxy();
-                                               }).then(function() {
-                                                   setTimeout(setStatus, 500);
-                                               }).then(function() {});
-                              }
-                              else if (username !== userjess) {
-                                  alert("Please, first close previous tunnel.");
-                                  reset();
-                                  }
-                          }
-                          else if (ssh_exists === true) {
-                              setProxy();
-                          }
-                          else {
-                              chrome.tabs.query({},
-                                                function(tabArray) {
-                                                    var found_tab = false;
-                                                    tabArray.filter(function(tab,
-                                                                             index,
-                                                                             array) {
-                                                        if (tab.url.substr(0, 36) === "https://jessica.memoryoftheworld.org") {
-                                                            alert("Start tunnel while on tab with Jessica's URL");
-                                                            chrome.tabs.update(tab.id, {active: true,
-                                                                                        highlighted: true});
-                                                            found_tab = true;
-                                                        }
-                                                    });
-                                                    if (found_tab === false) {
-                                                        alert("Ask Jessica for a URL to set up a tunnel.");
-                                                    }
-                                                });
-                          };
-                      });
 };
 
 var promiseClearProxy = function(options) {
@@ -140,12 +53,97 @@ var promiseTabsQuery = function(options) {
     });
 };
 
+var compose = function() {
+    // setStatus();
+    promiseTabsQuery({})
+        .then(
+            function(tabArray) {
+                var ssh_e = false;
+                tabArray.filter(function(tab,
+                                         index,
+                                         array) {
+                    if (tab.id === ssh_tab_id) {
+                        ssh_e = true;
+                    }
+                });
+                ssh_exists = ssh_e;
+            })
+        .then(
+            promiseTabsQuery({highlighted:true,
+                              currentWindow:true})
+                .then(
+                    function(tabArray) {
+                        var tab = tabArray[0];
+                        if (tab.url.substr(0, 36) === "https://jessica.memoryoftheworld.org") {
+                            var url = tab.url;
+                            var args = url.split("/");
+                            var userpass = args[args.length -1].split(":");
+                            var port = args[args.length - 2];
+                            var username = userpass[0];
+                            var password = userpass[1];
+
+                            if (username !== userjess && ssh_exists === true) {
+                                alert("Please, first close previous tunnel.");
+                                reset();
+                            }
+                            else if (ssh_exists === true) {
+                                setProxy();
+                            }
+                            else {
+                                portjess = port;
+                                promiseCreateTabs({'url': "../html/nassh.html#tunnel@ssh.pede.rs:443",
+                                                   'pinned': true,
+                                                   'active': false})
+                                    .then(
+                                        function(tab) {
+                                            ssh_tab_id = tab.id;
+                                        })
+                                    .then(
+                                        function() {
+                                            addProxyAuthorization(username, password);
+                                        })
+                                    .then(
+                                        function() {
+                                            setProxy();
+                                        })
+                                    .then(
+                                        function() {});
+                            }
+                        }
+                        else if (ssh_exists === true) {
+                            setProxy();
+                        }
+                        else {
+                            chrome.tabs.query({},
+                                              function(tabArray) {
+                                                  var found_tab = false;
+                                                  tabArray.filter(function(tab,
+                                                                           index,
+                                                                           array) {
+                                                      if (tab.url.substr(0, 36) === "https://jessica.memoryoftheworld.org") {
+                                                          alert("Start tunnel while on tab with Jessica's URL");
+                                                          chrome.tabs.update(tab.id,
+                                                                             {active: true,
+                                                                              highlighted: true});
+                                                          found_tab = true;
+                                                      }
+                                                  });
+                                                  if (found_tab === false) {
+                                                      alert("Ask Jessica for a URL to set up a tunnel.");
+                                                  }
+                                              });
+                        };
+                    }
+                ))
+        .then(function() {});
+    evc ++;
+};
+
 var reset = function() {
-    promiseClearProxy(
-        {scope: 'regular'},
-        function() {})
-        .then(promiseTabsQuery({})
-              .then(
+    promiseClearProxy({scope: 'regular'})
+        .then(
+            promiseTabsQuery({})
+                .then(
                   function(tabArray) {
                       tabArray.filter(function(tab,
                                                index,
@@ -154,41 +152,41 @@ var reset = function() {
                               chrome.tabs.remove(ssh_tab_id);
                           }
                       });
-                  }))
-        .then(function() {
-            setStatus();
+                  })
+                .then(function() {})
+        )
+        .then(
+            function() {
+                // setStatus();
+                status_text = "No tunnel to Jessica. Connected directly...";
+                chrome.browserAction.setBadgeText({text: ""});
         })
-        .then(function() {});
-};
-
-var config = {
-    mode: "fixed_servers",
-    rules: {
-        singleProxy: {
-            scheme: "http",
-            host: "127.0.0.1",
-            port:6666
-        },
-        bypassList: ["localhost",
-                     "127.0.0.1"]
-    }
+        .then(
+            function() {});
 };
 
 var setProxy = function() {
     promiseSetProxy(
         {value: config, scope: 'regular'})
-        .then(function() {
-            setStatus();
-        })
+        .then(
+            function() {
+                // setStatus();
+                status_text = "Tunnel to Jessica set. Connected via Jessica...";
+                chrome.browserAction.setBadgeBackgroundColor({color: [145, 196, 55, 128]});
+                chrome.browserAction.setBadgeText({text: geo_code});
+            })
         .then(function() {});
 };
 
 var clearProxy = function() {
-    promiseClearProxy(
-        {scope: 'regular'})
-        .then(function() {
-            setStatus();
-        })
+    promiseClearProxy({scope: 'regular'})
+        .then(
+            function() {
+                // setStatus();
+                status_text = "Tunnel to Jessica established but not in use. Connected directly...";
+                chrome.browserAction.setBadgeBackgroundColor({color: [253, 128, 68, 128]});
+                chrome.browserAction.setBadgeText({text: geo_code});
+            })
         .then(function() {});
 };
 
@@ -227,16 +225,17 @@ var addProxyAuthorization = function (user, pass) {
 var tabListener = function() {
     if (tevc !== evc) {
         tevc = evc;
-        ssh_exists = false;
         chrome.tabs.query({},
                           function(tabArray) {
+                              var ssh_e = false;
                               tabArray.filter(function(tab,
                                                        index,
                                                        array) {
                                   if (tab.id === ssh_tab_id) {
-                                      ssh_exists = true;
+                                      ssh_e = true;
                                   }
                               });
+                              ssh_exists = ssh_e;
                           });
 
         chrome.browserAction.getBadgeText({},
