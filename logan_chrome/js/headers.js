@@ -163,6 +163,7 @@ var reset = function() {
         })
         .then(
             function() {});
+    evc ++;
 };
 
 var setProxy = function() {
@@ -176,6 +177,7 @@ var setProxy = function() {
                 chrome.browserAction.setBadgeText({text: geo_code});
             })
         .then(function() {});
+    evc ++;
 };
 
 var clearProxy = function() {
@@ -188,6 +190,7 @@ var clearProxy = function() {
                 chrome.browserAction.setBadgeText({text: geo_code});
             })
         .then(function() {});
+    evc ++;
 };
 
 // var getProxy = function() {
@@ -241,6 +244,7 @@ var tabListener = function() {
         chrome.browserAction.getBadgeText({},
                                           function(t) {
                                               if (t !== "" && ssh_exists === false) {
+                                                  status_text = "No tunnel to Jessica. Connected directly...";
                                                   chrome.browserAction.setBadgeText({text: ""});
                                               }
                                           });
@@ -248,3 +252,4 @@ var tabListener = function() {
 };
 
 chrome.tabs.onUpdated.addListener(tabListener);
+chrome.tabs.onRemoved.addListener(tabListener);

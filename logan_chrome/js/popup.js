@@ -24,7 +24,9 @@ var setFlags = function() {
             if (geoip.country_code !== ""){
                 bp.geo_code = geoip.country_code.toUpperCase();
                 bp.geo_country = geoip.country;
-                chrome.browserAction.setBadgeText({text: bp.geo_code});
+                if (bp.ssh_exists === true) {
+                    chrome.browserAction.setBadgeText({text: bp.geo_code});
+                }
             }
             else {
                 bp.geo_country = "";
@@ -52,7 +54,7 @@ var setPopUp = function() {
         document.body.removeChild(tlag);
     }
 
-    if (bp.geo_country !== "") {
+    if (bp.geo_country !== "" && bp.ssh_exists === true) {
         var loc = document.createElement("div");
         var flg = document.createElement("span");
         loc.setAttribute('class', 'tlag');
