@@ -16,7 +16,7 @@ Geolocation web services like:
 could show through the IP address your router got from ISP from what country (but also city and the postcode), organization, or company/ISP IP address you use to surf the Internet, has been assigned to, and finally, determine your actual location.
 
 An example:
-http://i.imgur.com/cCuIEeB.png
+![Geolocation info](http://i.imgur.com/cCuIEeB.png "Geolocation info")
 
 Many services discriminate users coming from interpreting their IP address
 Jessica allows Logan to go to Internet through her own computer...
