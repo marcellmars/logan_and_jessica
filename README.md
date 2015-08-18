@@ -2,6 +2,8 @@
 
 In the common scenario of surfing Internet today your personal computer will automaticaly get its own LAN IP address from the (usually WiFi) router which has its own public IP address (again usually automatically given from your Internet Serice Provider at given moment). In other words: the public IP address has been assigned to your router after the router asked for it from your ISP router. The same happens to your computer after it asks for the LAN IP from your router.
 
+http://i.imgur.com/TT5hnU7.png
+
 This router will pass request (e.g. https://en.wikipedia.org) coming from your personal computer to the requested web server and then that server will see your router's public IP address as the IP address you are coming from.  
 
 Geolocation web services like:
