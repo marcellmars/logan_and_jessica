@@ -3,7 +3,7 @@
 
 
   * [Geolocation discrimination](#geolocation-discrimination)
-  * [How to share geolocation](#how-to-share-geolocation)
+  * [How Jessica lets Logan run](#how-jessica-lets-logan-run)
 
 Geolocation discrimination
 ==========================
@@ -27,7 +27,7 @@ An example:
 
 Many web services discriminate their users by their IP address (or where they are coming from). People shouldn't face discrimination.
 
-How to share geolocation
+How Jessica lets Logan run
 ========================
 
 *Logan & Jessica* are tools for friends to help each other by sharing their access to the router with IP address which sits in the "*right*" country.
