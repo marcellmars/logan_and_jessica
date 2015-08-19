@@ -1,7 +1,6 @@
 :runner:Jessica invites :runner:Logan to run together...
+========================================================
 
-Table of contents
-=================
 
   * [Geolocation discrimination](#geolocation-discrimination)
   * [How to share geolocation](#how-to-share-geolocation)
