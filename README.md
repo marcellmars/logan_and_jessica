@@ -61,7 +61,7 @@ https://jessica.memoryoftheworld.org/13793/0d0f46e9662743918a6c5980b2f6de6f:2f01
 ![6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.](http://i.imgur.com/oUf6nr6.png "6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.")
 7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.
 ========================================
-![7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.](http://i.imgur.com/1Anikzb.png "7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.)
+![7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.](http://i.imgur.com/1Anikzb.png "7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.")
 8) Jessica gets notification that Logan is running through her tunnel.
 ========================================
-![8) Jessica gets notification that Logan is running through her tunnel.](http://i.imgur.com/nvzSrVh.png "8) Jessica gets notification that Logan is running through her tunnel.)
+![8) Jessica gets notification that Logan is running through her tunnel.](http://i.imgur.com/nvzSrVh.png "8) Jessica gets notification that Logan is running through her tunnel.")
