@@ -48,4 +48,20 @@ Here is how:
 ========================================
 Here is the example of URL to be sent by email, chat or any other available channel:
 
-https://jessica.memoryoftheworld.org/13793/0d0f46e9662743918a6c5980b2f6de6f:2f010b2642c14467882d43fbc9eaee81
+https://jessica.memoryoftheworld.org/13793/0d0f46e9662743918a6c5980b2f6de6f:2f010b2642c14467882d43fbc9eaee8
+
+4) Logan opens the URL sent by Jessica.
+========================================
+![4) Logan opens the URL sent by Jessica.](http://i.imgur.com/rFCTAeK.png "4) Logan opens the URL sent by Jessica.")
+5) In extension popup Logan clicks [VIA JESSICA].
+========================================
+![5) In extension popup Logan clicks [VIA JESSICA].](http://i.imgur.com/IlZwMBX.png "5) In extension popup Logan clicks [VIA JESSICA].")
+6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.
+========================================
+![6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.](http://i.imgur.com/oUf6nr6.png "6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.")
+7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.
+========================================
+![7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.](http://i.imgur.com/1Anikzb.png "7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.)
+8) Jessica gets notification that Logan is running through her tunnel.
+========================================
+![8) Jessica gets notification that Logan is running through her tunnel.](http://i.imgur.com/nvzSrVh.png "8) Jessica gets notification that Logan is running through her tunnel.)
