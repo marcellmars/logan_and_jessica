@@ -5,6 +5,7 @@ import random
 import datetime
 import time
 
+import os
 import sys
 import socket
 import ssl
@@ -14,6 +15,7 @@ import urlparse
 import threading
 import base64
 import uuid
+import ConfigParser
 
 from BaseHTTPServer import HTTPServer
 from SimpleHTTPServer import SimpleHTTPRequestHandler
@@ -25,9 +27,27 @@ from multiprocessing import Process, Pipe
 
 DDOS = []
 
-PORT = 9991
+LOCAL_PORT = 9991
 PUBLIC_SERVER = "ssh.pede.rs"
 PUBLIC_SERVER_PORT = "443"
+PUBLIC_SERVER_USER = "tunnel"
+PUBLIC_SERVER_PASSWORD = "00"
+
+if os.path.isfile("jessica.ini"):
+    c = ConfigParser.ConfigParser()
+    c.read("jessica.ini")
+    for o in c.options('jessica'):
+        if o == 'server':
+            PUBLIC_SERVER = c.get('jessica', 'server')
+        elif o == 'user':
+            PUBLIC_SERVER_USER = c.get('jessica', 'user')
+        elif o == 'port':
+            PUBLIC_SERVER_PORT = c.get('jessica', 'port')
+        elif o == 'local_port':
+            LOCAL_PORT = c.get('jessica', 'local_port')
+        elif o == 'password':
+            PUBLIC_SERVER_PASSWORD = c.get('jessica', 'password')
+
 
 PHOTO = """
 R0lGODlhQAFZAOf/ACoBACsDAS8CBCsEAi8DBTAEBzIFATIGCTQIDTYJBzQNCDYOAjUOCjYPCzcQ
@@ -314,7 +334,7 @@ class Proxy():
         ProxyRequestHandler.log_text = ica
         ProxyRequestHandler.protocol_version = "HTTP/1.1"
         ProxyRequestHandler.key = self.credentials[2]
-        ProxyRequestHandler.proxysession = self.credentials[0][:8]
+        ProxyRequestHandler.proxysession = self.credentials[0]
         self.httpd = ThreadingHTTPServer((server_address), ProxyRequestHandler)
 
     def start_server(self):
@@ -325,8 +345,9 @@ class Proxy():
         self.httpd.socket.close()
 
     def get_uuid_credentials(self):
-        username = uuid.uuid4().hex
-        password = uuid.uuid4().hex
+        uu = uuid.uuid4().hex
+        username = uu[:6]
+        password = uu[-6:]
         return (username,
                 password,
                 base64.b64encode("{}:{}".format(username,
@@ -360,7 +381,7 @@ class Proxsica:
             return
 
         self.portjess = random.randint(1025, 48000)
-        self.server = Proxy(self.ica, self.portjess, PORT)
+        self.server = Proxy(self.ica, self.portjess, LOCAL_PORT)
         self.p = Process(target=self.server.start_server)
         self.p.start()
 
@@ -372,9 +393,9 @@ class Proxsica:
                                           '-o', 'ServerAliveINterval=60',
                                           '-o', 'ExitOnForwardFailure=yes',
                                           '-o', 'LogLevel=quiet',
-                                          '-l', 'tunnel',
+                                          '-l', PUBLIC_SERVER_USER,
                                           '-R', '{}:localhost:{}'.format(self.portjess,
-                                                                         PORT),
+                                                                         LOCAL_PORT),
                                           PUBLIC_SERVER,
                                           '-p', PUBLIC_SERVER_PORT])
 
@@ -394,10 +415,14 @@ class Proxsica:
 
             self.label_text.set("Copy Logan's URL")
             prefix = "https://jessica.memoryoftheworld.org"
-            self.url = "{}/{}/{}:{}".format(prefix,
-                                            self.portjess,
-                                            self.server.credentials[0],
-                                            self.server.credentials[1])
+            self.url = "{}/{}/{}/{}/{}/{}/{}:{}".format(prefix,
+                                                     PUBLIC_SERVER_PASSWORD,
+                                                     PUBLIC_SERVER_USER,
+                                                     PUBLIC_SERVER_PORT,
+                                                     PUBLIC_SERVER,
+                                                     self.portjess,
+                                                     self.server.credentials[0],
+                                                     self.server.credentials[1])
         else:
             self.label_text.set("Hm... Please restart the app!")
 

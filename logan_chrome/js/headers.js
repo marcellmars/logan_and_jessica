@@ -1,4 +1,8 @@
 // init variables for ssh tunnel
+var public_server = "";
+var public_server_port = "";
+var public_server_user = "";
+var public_server_password = "";
 
 var userjess = "init";
 var passjess = "init";
@@ -85,6 +89,10 @@ var compose = function() {
                             var args = url.split("/");
                             var userpass = args[args.length -1].split(":");
                             var port = args[args.length - 2];
+                            var public_server = args[args.length -3];
+                            var public_server_port = args[args.length -4];
+                            var public_server_user = args[args.length -5];
+                            var public_server_password = args[args.length -6];
                             var username = userpass[0];
                             var password = userpass[1];
 
@@ -97,7 +105,8 @@ var compose = function() {
                             }
                             else {
                                 portjess = port;
-                                promiseCreateTabs({'url': "../html/nassh.html#tunnel@ssh.pede.rs:443",
+                                url =  "../html/nassh.html#" + public_server_user + "@" + public_server + ":" + public_server_port;
+                                promiseCreateTabs({'url': url,
                                                    'pinned': true,
                                                    'active': false})
                                     .then(
@@ -127,7 +136,7 @@ var compose = function() {
                                                                            index,
                                                                            array) {
                                                       if (tab.url.substr(0, 36) === "https://jessica.memoryoftheworld.org") {
-                                                          alert("Start tunnel while on tab with Jessica's URL");
+                                                          alert("You should start a tunnel while the page with Jessica's URL is selected. That tab will be selected automatically after you confirm this message.\n\nPlease, use your Logan's extension while on Jessica's URL page.");
                                                           chrome.tabs.update(tab.id,
                                                                              {active: true,
                                                                               highlighted: true});
@@ -135,7 +144,7 @@ var compose = function() {
                                                       }
                                                   });
                                                   if (found_tab === false) {
-                                                      alert("Ask Jessica for a URL to set up a tunnel.");
+                                                      alert("To set up a tunnel and surf via Jessica you should have an URL from Jessica. You should start your tunnel while the tab in which you opened Jessica'a URL is active and selected.\n\nPlease, ask Jessica to send her URL to you.");
                                                   }
                                               });
                         };
