@@ -28,7 +28,7 @@ Geolocation web services like:
  - http://whatismyipaddress.com/
  - http://www.whatsmyip.org/more-info-about-you/ 
  - and many others
-will interpret the IP address your router got from your ISP to claim from what country (but also city and the postcode), organization, or company/ISP you are coming from.
+will interpret the IP address your router got from your ISP to claim from which country (but also city and the postcode), organization, or company/ISP you are coming from.
 
 An example:
 ![Geolocation info](http://i.imgur.com/cCuIEeB.png "Geolocation info")
