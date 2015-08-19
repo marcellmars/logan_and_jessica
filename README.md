@@ -1,5 +1,14 @@
 :runner:Jessica invites :runner:Logan to run together...
 
+Table of contents
+=================
+
+  * [Geolocation discrimination](#geolocation-discrimination)
+  * [How to share geolocation](#how-to-share-geolocation)
+
+Geolocation discrimination
+==========================
+
 In the common scenario of surfing the Internet today your personal computer will automaticaly get its own LAN IP address from the router (usually WiFi) which has its own public IP address (again usually automatically given from your Internet Serice Provider at given moment). In other words: the public IP address has been assigned to your router after the router asked for it from your ISP router. The same process happens to your computer after it asks for the LAN IP from your router.
 
 ![Internet>ISP>Router>PC](http://i.imgur.com/7VygiVE.png "Internet>ISP>Router>PC")
@@ -18,6 +27,9 @@ An example:
 ![Geolocation info](http://i.imgur.com/cCuIEeB.png "Geolocation info")
 
 Many web services discriminate their users by their IP address (or where they are coming from). People shouldn't face discrimination.
+
+How to share geolocation
+========================
 
 *Logan & Jessica* are tools for friends to help each other by sharing their access to the router with IP address which sits in the "*right*" country.
 
