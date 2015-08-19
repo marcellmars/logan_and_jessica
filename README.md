@@ -4,6 +4,7 @@
 
   * [Geolocation discrimination](#geolocation-discrimination)
   * [How Jessica lets Logan run](#how-jessica-lets-logan-run)
+   * [1) Jessica sets up a tunnel for Logan.](#1-jessica-sets-up-a-tunnel-for-logan)
 
 Geolocation discrimination
 ==========================
