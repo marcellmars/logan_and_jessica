@@ -38,3 +38,14 @@ If *Jessica* is a student at the wealthy university having access to scientific 
 
 Here is how:
 
+1) Jessica sets up a tunnel for Logan.
+========================================
+![1) Jessica sets up a tunnel for Logan.](http://i.imgur.com/jEtCT1a.png "1) Jessica sets up a tunnel for Logan.")
+2) Jessica copies the URL for Logan.
+========================================
+![2) Jessica copies the URL for Logan.](http://i.imgur.com/c8dsvb8.png "2) Jessica copies the URL for Logan.")
+3) Jessica sends the URL to Logan.
+========================================
+Here is the example of URL to be sent by email, chat or any other available channel:
+
+https://jessica.memoryoftheworld.org/13793/0d0f46e9662743918a6c5980b2f6de6f:2f010b2642c14467882d43fbc9eaee81
