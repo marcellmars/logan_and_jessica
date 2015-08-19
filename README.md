@@ -10,7 +10,7 @@
    * [4) Logan opens the URL sent by Jessica.](#4-logan-opens-the-url-sent-by-jessica)
    * [5) In extension popup Logan clicks [VIA JESSICA].](#5-in-extension-popup-logan-clicks-via-jessica)
    * [6) Logan's Chrome extension opens up pinned tab and establishes the tunnel to Jessica.](#6-logans-chrome-extension-opens-up-pinned-tab-and-establishes-the-tunnel-to-jessica)
-   * [7) From now on Logan gets tunneled to the internet through Jessica's computer and IP address.](#7-from-now-on-logan-gets-tunneled-to-the-internet-through-jessicas-computer-and-ip-address)
+   * [7) From now on Logan's access to the Internet is tunneled through Jessica's computer and IP address.](#7-from-now-on-logans-access-to-the-internet-is-tunneled-through-jessicas-computer-and-ip-address)
    * [8) Jessica gets notification that Logan is running through her tunnel.](#8-jessica-gets-notification-that-logan-is-running-through-her-tunnel)
 
 Geolocation discrimination
