@@ -33,10 +33,12 @@ var setPopUp = function() {
                 .then(
                     function(geoip) {
                         if (geoip.country_code !== "") {
+                            evc = bp.evc;
+
                             bp.geo_code = geoip.country_code.toUpperCase();
                             bp.geo_country = geoip.country;
-                            evc = bp.evc;
                             chrome.browserAction.setBadgeText({text: bp.geo_code});
+
                             var loc = document.createElement("div");
                             var flg = document.createElement("span");
                             loc.setAttribute('class', 'tlag');
@@ -78,4 +80,4 @@ document.addEventListener("DOMContentLoaded", function() {
 
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("reset").addEventListener("click", bp.reset);
-})
+});
