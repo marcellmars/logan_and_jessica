@@ -1,5 +1,6 @@
 var bp = chrome.extension.getBackgroundPage();
 var evc = -1;
+var gjc = false;
 
 var getJSON = function(url) {
     return new Promise(function(resolve, reject) {
@@ -18,54 +19,50 @@ var getJSON = function(url) {
     });
 };
 
-var setFlags = function() {
-    getJSON("https://www.telize.com/geoip").then(
-        function(geoip) {
-            if (geoip.country_code !== ""){
-                bp.geo_code = geoip.country_code.toUpperCase();
-                bp.geo_country = geoip.country;
-                if (bp.ssh_exists === true) {
-                    chrome.browserAction.setBadgeText({text: bp.geo_code});
-                }
-            }
-            else {
-                bp.geo_country = "";
-                bp.geo_code = "  ";
-            }
-        }, function(status) {
-            console.log(status);
-            bp.geo_country = "";
-            bp.geo_code = "  ";
-        });
-};
-
 var setPopUp = function() {
     document.getElementById("status").innerText = bp.status_text;
 
     if (bp.evc !== evc && bp.ssh_exists === true) {
-        setFlags();
-        if (bp.geo_country !== "") {
-            evc = bp.evc;
+        var tlag = document.getElementById('tlag');
+        if (tlag !== null) {
+            document.body.removeChild(tlag);
         }
-    }
+        if (gjc === false) {
+            gjc = true;
+            getJSON("https://www.telize.com/geoip")
+                .then(
+                    function(geoip) {
+                        if (geoip.country_code !== "") {
+                            bp.geo_code = geoip.country_code.toUpperCase();
+                            bp.geo_country = geoip.country;
+                            evc = bp.evc;
+                            chrome.browserAction.setBadgeText({text: bp.geo_code});
+                            var loc = document.createElement("div");
+                            var flg = document.createElement("span");
+                            loc.setAttribute('class', 'tlag');
+                            loc.setAttribute('id', 'tlag');
+                            flg.setAttribute('class', 'flag ' + 'flag-' + bp.geo_code.toLowerCase());
 
-    var tlag = document.getElementById('tlag');
-    if (tlag !== null) {
-        document.body.removeChild(tlag);
-    }
-
-    if (bp.geo_country !== "" && bp.ssh_exists === true) {
-        var loc = document.createElement("div");
-        var flg = document.createElement("span");
-        loc.setAttribute('class', 'tlag');
-        loc.setAttribute('id', 'tlag');
-        flg.setAttribute('class', 'flag ' + 'flag-' + bp.geo_code.toLowerCase());
-
-        var txt = document.createTextNode("Current location: " + bp.geo_country + "  ");
-        loc.appendChild(txt);
-        loc.appendChild(flg);
-        document.body.appendChild(loc);
-    }
+                            var txt = document.createTextNode("Current location: " + bp.geo_country + "  ");
+                            loc.appendChild(txt);
+                            loc.appendChild(flg);
+                            document.body.appendChild(loc);
+                        }
+                        else {
+                            bp.geo_country = "";
+                            bp.geo_code = "  ";
+                        }
+                    }, function(status) {
+                        console.log(status);
+                        bp.geo_country = "";
+                        bp.geo_code = "  ";
+            }).
+                then(
+                    function() {
+                        gjc = false;
+                    }
+                );
+        }
     setTimeout(setPopUp, 400);
 };
 
