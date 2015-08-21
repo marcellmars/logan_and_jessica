@@ -83,7 +83,6 @@ var setFlag = function() {
     getJSON("https://www.telize.com/geoip")
         .then(
             function(geoip) {
-                console.log(geoip);
                 if (geoip.country_code !== "") {
                     geo_code = geoip.country_code.toUpperCase();
                     chrome.browserAction.setBadgeText({text: geo_code});
@@ -261,17 +260,14 @@ var getProxy = function() {
 
 var authListener = function(details) {
     if (!details.isProxy || details.realm !== realmjess) {
-        // console.log("NOT PROXY!");
         return {cancel:true};
     } else {
-        // console.log(userjess, passjess);
         return {authCredentials:{username: userjess,
                                  password: passjess}};
     }
 };
 
 var addProxyAuthorization = function (user, pass) {
-    // console.log("addProxyAuthorization");
     userjess = user;
     passjess = pass;
     realmjess = "Logan & Jessica " + user.substring(0,8);
