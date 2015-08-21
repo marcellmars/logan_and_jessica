@@ -23,10 +23,12 @@ var setPopUp = function() {
     document.getElementById("status").innerText = bp.status_text;
 
     if (bp.evc !== evc && bp.ssh_exists === true) {
+
         var tlag = document.getElementById('tlag');
         if (tlag !== null) {
             document.body.removeChild(tlag);
         }
+
         if (gjc === false) {
             gjc = true;
             getJSON("https://www.telize.com/geoip")
@@ -58,13 +60,15 @@ var setPopUp = function() {
                         console.log(status);
                         bp.geo_country = "";
                         bp.geo_code = "  ";
-            }).
-                then(
+                    }
+                )
+                .then(
                     function() {
                         gjc = false;
                     }
                 );
-        }
+        };
+    };
     setTimeout(setPopUp, 400);
 };
 
