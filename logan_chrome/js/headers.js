@@ -10,7 +10,6 @@ var realmjess = "init";
 var portjess = 8787;
 var ssh_tab_id = -1;
 var ssh_exists = false;
-var proxy_exists = false;
 
 // variables for popup html
 var geo_code = "  ";
@@ -31,6 +30,23 @@ var config = {
         bypassList: ["localhost",
                      "127.0.0.1"]
     }
+};
+
+var getJSON = function(url) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('get', url, true);
+        xhr.responseType = 'json';
+        xhr.onload = function() {
+            var status = xhr.status;
+            if (status == 200) {
+                resolve(xhr.response);
+            } else {
+                reject(status);
+            }
+        };
+        xhr.send();
+    });
 };
 
 var promiseCreateTabs = function(options) {
@@ -61,6 +77,24 @@ var promiseGetBadgeText = function(options) {
     return new Promise(function(resolve, reject) {
         chrome.browserAction.getBadgeText(options, resolve);
     });
+};
+
+var setFlag = function() {
+    getJSON("https://www.telize.com/geoip")
+        .then(
+            function(geoip) {
+                console.log(geoip);
+                if (geoip.country_code !== "") {
+                    geo_code = geoip.country_code.toUpperCase();
+                    chrome.browserAction.setBadgeText({text: geo_code});
+                }
+            }
+        );
+
+    if (ssh_exists === true && (geo_code === "  " || geo_code === "") {
+        setTimeout(setFlag, 5000);
+    }
+
 };
 
 var compose = function() {
@@ -120,6 +154,10 @@ var compose = function() {
                                     .then(
                                         function() {
                                             setProxy();
+                                        })
+                                    .then(
+                                        function() {
+                                            setFlag();
                                         })
                                     .then(
                                         function() {});
@@ -190,7 +228,11 @@ var setProxy = function() {
                 status_text = "Tunnel to Jessica set. Connected via Jessica...";
                 chrome.browserAction.setBadgeBackgroundColor({color: [145, 196, 55, 128]});
                 chrome.browserAction.setBadgeText({text: geo_code});
-            })
+            }
+        )
+        .then(function() {
+            setFlag();
+        })
         .then(function() {});
     evc ++;
 };
@@ -208,14 +250,14 @@ var clearProxy = function() {
     evc ++;
 };
 
-// var getProxy = function() {
-//     chrome.proxy.settings.get(
-//         {incognito: false},
-//         function(details) {
-//             console.log(details);
-//             proxy = details.value.mode;
-//         });
-// };
+var getProxy = function() {
+    chrome.proxy.settings.get(
+        {incognito: false},
+        function(details) {
+            console.log(details);
+            proxy = details.value.mode;
+        });
+};
 
 var authListener = function(details) {
     if (!details.isProxy || details.realm !== realmjess) {

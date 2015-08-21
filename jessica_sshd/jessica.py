@@ -416,13 +416,13 @@ class Proxsica:
             self.label_text.set("Copy Logan's URL")
             prefix = "https://jessica.memoryoftheworld.org"
             self.url = "{}/{}/{}/{}/{}/{}/{}:{}".format(prefix,
-                                                     PUBLIC_SERVER_PASSWORD,
-                                                     PUBLIC_SERVER_USER,
-                                                     PUBLIC_SERVER_PORT,
-                                                     PUBLIC_SERVER,
-                                                     self.portjess,
-                                                     self.server.credentials[0],
-                                                     self.server.credentials[1])
+                                                        PUBLIC_SERVER_PASSWORD,
+                                                        PUBLIC_SERVER_USER,
+                                                        PUBLIC_SERVER_PORT,
+                                                        PUBLIC_SERVER,
+                                                        self.portjess,
+                                                        self.server.credentials[0],
+                                                        self.server.credentials[1])
         else:
             self.label_text.set("Hm... Please restart the app!")
 

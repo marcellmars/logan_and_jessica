@@ -3,22 +3,6 @@ var evc = -1;
 var gjc = false;
 bp.evc ++;
 
-var getJSON = function(url) {
-    return new Promise(function(resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('get', url, true);
-        xhr.responseType = 'json';
-        xhr.onload = function() {
-            var status = xhr.status;
-            if (status == 200) {
-                resolve(xhr.response);
-            } else {
-                reject(status);
-            }
-        };
-        xhr.send();
-    });
-};
 
 var setPopUp = function() {
     document.getElementById("status").innerText = bp.status_text;
@@ -32,7 +16,7 @@ var setPopUp = function() {
 
         if (gjc === false) {
             gjc = true;
-            getJSON("https://www.telize.com/geoip")
+            bp.getJSON("https://www.telize.com/geoip")
                 .then(
                     function(geoip) {
                         if (geoip.country_code !== "") {
@@ -58,7 +42,6 @@ var setPopUp = function() {
                             bp.geo_code = "  ";
                         }
                     }, function(status) {
-                        console.log(status);
                         bp.geo_country = "";
                         bp.geo_code = "  ";
                     }
