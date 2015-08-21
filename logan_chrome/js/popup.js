@@ -1,6 +1,7 @@
 var bp = chrome.extension.getBackgroundPage();
 var evc = -1;
 var gjc = false;
+bp.evc ++;
 
 var getJSON = function(url) {
     return new Promise(function(resolve, reject) {

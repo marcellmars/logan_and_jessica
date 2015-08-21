@@ -30,9 +30,6 @@ Geolocation web services like:
  - and many others
 interpret the IP address your router got from your ISP to claim from which country (but also the city and the postcode), organization, or company/ISP you are coming from.
 
-An example:  
-Many web services discriminate their users on the basis of their IP addresses. People shouldn't face discrimination.
-
 An example:
 ![Geolocation info](http://i.imgur.com/cCuIEeB.png "Geolocation info")
 
