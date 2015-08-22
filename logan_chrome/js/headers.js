@@ -90,10 +90,9 @@ var setFlag = function() {
             }
         );
 
-    if (ssh_exists === true && (geo_code === "  " || geo_code === "") {
+    if (ssh_exists === true && (geo_code === "  " || geo_code === "")) {
         setTimeout(setFlag, 5000);
     }
-
 };
 
 var compose = function() {

@@ -492,7 +492,7 @@ nassh.CommandInstance.prototype.connectTo = function(params) {
     argv.arguments.push('-p ' + params.port);
 
   argv.arguments.push(params.username + '@' + params.hostname);
-  argv.arguments.push('-v');
+  // argv.arguments.push('-v');
   argv.arguments.push("-o StrictHostKeyChecking=no");
   argv.arguments.push('-N');
   // argv.arguments.push('-L 6666:ssh.pede.rs:' + chrome.extension.getBackgroundPage().portjess);
